@@ -1,0 +1,46 @@
+// Here you can add other styles
+.paddingLeft {
+  margin-left: 10px;
+}
+
+.paddingRight {
+  margin-right: 10px;
+}
+
+.blue {
+  color: $blue;
+}
+
+.cardButton {
+  background-color: red;
+}
+
+.addButton {
+  color: white;
+}
+
+th h3 {
+  margin: 0;
+}
+
+.center {
+  text-align: center;
+}
+
+.fullWidthButton {
+  width: 100%;
+}
+
+.topButton {
+  margin-bottom: 10px;
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+.linkCard:hover {
+  text-decoration: none;
+  color: $blue;
+  font-size: 20px;
+}
