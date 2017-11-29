@@ -44,3 +44,56 @@ th h3 {
   color: $blue;
   font-size: 20px;
 }
+
+.invoiceCard {
+  // width: 80%;
+  // margin-left: auto;
+  // margin-right: auto;
+}
+.invoice-container {
+  // border: 2px black solid;
+  // background-color: red;
+  width: inherit;
+  // max-width: 600px;
+  margin: 0px auto;
+  height: 840px;
+  // height: 29.7cm;
+  position: relative;
+}
+
+.invoiceHeader {
+  margin-bottom: 20px;
+}
+
+.invoiceClientDetails {
+  margin-bottom: 20px;
+}
+
+.invoiceTableRow {
+  min-height: 200px;
+  margin-bottom: 10px;
+}
+
+.invoiceFooter {
+  // width: 80%;
+  position: absolute;
+  text-align: center;
+  bottom: 0;
+}
+
+.footer {
+  border-top: 1px grey solid;
+  // margin: 0px auto;
+}
+
+.rightBox {
+  text-align: right;
+}
+
+.leftBox {
+  text-align: left;
+}
+
+.bold {
+  font-weight: bold;
+}
