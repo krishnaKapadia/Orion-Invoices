@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Row, Col, Card, CardHeader, CardBody, CardFooter,
-  Table
+  Table, Input
 } from 'reactstrap';
 
 class Invoices extends Component {
@@ -58,7 +58,7 @@ class Invoices extends Component {
                 <Row className="invoiceTableRow">
                   <Col>
                     {/* Table */}
-                    <Table hover bordered>
+                    <Table className="table" condensed>
                       <thead>
                         <tr>
                           <th>Order #</th>
@@ -78,16 +78,75 @@ class Invoices extends Component {
                         </tr>
 
                         <tr>
-                          <td>A56D</td>
-                          <td>White T-Shirt with Multi-color logo</td>
-                          <td>30</td>
-                          <td>$4.50</td>
-                          <td>$135</td>
+                          <td><Input type="text" name="orderNumber" /></td>
+                          <td><Input type="desc" name="desc" /></td>
+                          <td><Input type="number" name="quantity" /></td>
+                          <td><Input type="number" name="unitPrice" /></td>
+                          <td><Input type="number" name="totalPrice" /></td>
                         </tr>
 
                         <tr>
                           <td>Add Item</td>
+                          <td> {/* Spacer */} </td>
+                          <td> {/* Spacer */} </td>
+                          <td colSpan="2">
+                            <Table bordered>
+                              <tbody>
+                                <tr>
+                                  <td>
+                                    <Row className="totals">
+                                      <Col md="6">Subtotal:</Col>
+                                      <Col md="6">$135</Col>
+                                    </Row>
+                                  </td>
+                                </tr>
+
+                                <tr>
+                                  <td>
+                                    <Row className="totals">
+                                      <Col md="6">Tax(15%):</Col>
+                                      <Col md="6">$13.45</Col>
+                                    </Row>
+                                  </td>
+                                </tr>
+
+                                <tr>
+                                  <td>
+                                    <Row className="totals">
+                                      <Col md="6">Total:</Col>
+                                      <Col md="6">$148.35</Col>
+                                    </Row>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </Table>
+                            <Row className="totals">
+                              <Col md="6">Subtotal:</Col>
+                              <Col md="6">$135</Col>
+                            </Row>
+
+                            <Row className="totals">
+                              <Col md="6">Tax(15%):</Col>
+                              <Col md="6">$13.45</Col>
+                            </Row>
+
+                            <Row className="totals">
+                              <Col md="6">Total:</Col>
+                              <Col md="6">$148.35</Col>
+                            </Row>
+                          </td>
                         </tr>
+
+                        {/* <tr>
+                          <td className="noBox"> </td>
+                          <td className="noBox">  </td>
+                          <td className="noBox">  </td>
+                          <td colSpan="2">
+
+                          </td>
+                        </tr> */}
+
+
                       </tbody>
                     </Table>
                   </Col>
@@ -124,6 +183,7 @@ class Invoices extends Component {
 
                   </Col>
                 </Row>
+
               </div>
 
 
@@ -132,7 +192,7 @@ class Invoices extends Component {
           </Card>
         </Col>
 
-        <Col md="4">
+        <Col xs="0" sm="0" md="4">
           <Card>
             <CardBody>
               Buttons

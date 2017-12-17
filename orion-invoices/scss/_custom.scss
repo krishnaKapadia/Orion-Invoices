@@ -56,7 +56,7 @@ th h3 {
   width: inherit;
   // max-width: 600px;
   margin: 0px auto;
-  height: 840px;
+  min-height: 840px;
   // height: 29.7cm;
   position: relative;
 }
@@ -72,18 +72,22 @@ th h3 {
 .invoiceTableRow {
   min-height: 200px;
   margin-bottom: 10px;
+  padding-bottom: auto;
 }
 
 .invoiceFooter {
   // width: 80%;
-  position: absolute;
+  margin-top: 20px;
+  // position: absolute;
   text-align: center;
-  bottom: 0;
+  // bottom: 0;
 }
 
 .footer {
+  padding-top: 20px;
   border-top: 1px grey solid;
   // margin: 0px auto;
+  // font-size: 10vh;
 }
 
 .rightBox {
@@ -96,4 +100,12 @@ th h3 {
 
 .bold {
   font-weight: bold;
+}
+
+.noBox {
+  border: none;
+}
+
+.totals {
+  padding-top: 10px;
 }

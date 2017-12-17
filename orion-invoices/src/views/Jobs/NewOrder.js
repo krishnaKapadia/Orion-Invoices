@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, CardHeader, CardBody, CardFooter,
   Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
 
 class NewOrder extends Component {
 
@@ -51,7 +52,7 @@ class NewOrder extends Component {
 
                       <Row>
                         <Col xs="12" md="2" lg="2">
-                          <Button className="fullWidthButton"> + </Button>
+                          <Button className="fullWidthButton" color="primary"> + </Button>
                         </Col>
                       </Row>
                     </div>
@@ -105,7 +106,9 @@ class NewOrder extends Component {
               </CardBody>
 
               <CardFooter>
-                  <Button type="submit" size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
+                  <NavLink to="/Orders">
+                    <Button type="submit" size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
+                  </NavLink>
                   <Button className="paddingLeft" type="reset" size="md" color="danger"><i className="fa fa-ban"></i> Reset Fields </Button>
               </CardFooter>
             </Card>
