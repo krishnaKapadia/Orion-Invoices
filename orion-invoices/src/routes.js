@@ -3,8 +3,9 @@ const routes = {
   '/dashboard': 'Dashboard',
   '/clients': 'Clients',
   '/employees': 'Employees',
+  '/orders/newOrder': 'New Order',
   '/orders': 'Orders',
-  '/newOrder': 'New Order',
+  '/invoices/createInvoice': 'Create Invoice',
   '/invoices': 'Invoices'
 };
 export default routes;

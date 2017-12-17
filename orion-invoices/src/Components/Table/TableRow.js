@@ -123,6 +123,46 @@ class TableRow extends Component {
           </tr>
         );
 
+      case "invoice":
+      return (
+        <tr>
+          <td><input type="checkbox" /></td>
+          <td>{this.props.invoiceNumber}</td>
+          <td>{this.props.clientName}</td>
+          <td>{this.props.date}</td>
+          <td><input type="checkbox" /></td>
+
+          <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
+
+          <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
+            <ModalHeader>Edit Invoice Information</ModalHeader>
+
+            <ModalBody>
+              {/* NEED TO TAKE INTO ACCOUNT THE EDITING OF THE ACTUAL INVOICE ORDER, NOT JUST THE CLIENT CREDENTIALS */}
+              <Form>
+                <FormGroup>
+                  <Label>Invoice Number: </Label>
+                  <Input type="text" name="clientCode" defaultValue={this.props.invoiceNumber} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Client Name: </Label>
+                  <Input type="text" name="clientName" defaultValue={this.props.clientName} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Date Created</Label>
+                  <Input type="text" name="clientAddress" defaultValue={this.props.date} />
+                </FormGroup>
+              </Form>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button color="primary" onClick={this.toggle}>Save Changes</Button>
+              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+            </ModalFooter>
+          </Modal>
+
+        </tr>
+      );
     }
 
   }

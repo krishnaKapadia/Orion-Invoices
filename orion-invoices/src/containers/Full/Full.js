@@ -13,6 +13,7 @@ import Employees from '../../views/Employees/';
 import Jobs from '../../views/Jobs/';
 import NewOrder from '../../views/Jobs/NewOrder';
 import Invoices from '../../views/Invoices/Invoices';
+import NewInvoice from '../../views/Invoices/NewInvoice';
 
 class Full extends Component {
   render() {
@@ -28,8 +29,9 @@ class Full extends Component {
                 <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
                 <Route path="/clients" name="Clients" component={Clients} />
                 <Route path="/employees" name="Employees" component={Employees} />
+                <Route path="/orders/newOrder" name="New Order" component={NewOrder} />
                 <Route path="/orders" name="Orders" component={Jobs} />
-                <Route path="/newOrder" name="New Order" component={NewOrder} />
+                <Route path="/invoices/createInvoice" name="Create Invoice" component={NewInvoice} />
                 <Route path="/invoices" name="Invoices" component={Invoices} />
                 <Redirect from="/" to="/dashboard"/>
               </Switch>

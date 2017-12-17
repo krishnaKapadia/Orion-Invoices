@@ -33,7 +33,7 @@ class Jobs extends Component {
           <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
             <Card>
               <CardBody>
-                <NavLink to="/newOrder">
+                <NavLink to="/orders/newOrder">
                   <Button className="fullWidthButton" color="primary" onClick={this.toggle}>New Order</Button>
                 </NavLink>
 
