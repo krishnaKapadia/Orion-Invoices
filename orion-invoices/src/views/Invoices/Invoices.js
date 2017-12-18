@@ -55,7 +55,7 @@ class Invoices extends Component {
 
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i>Clients
+            <i className="fa fa-align-justify"></i>Invoices
           </CardHeader>
 
           <CardBody>

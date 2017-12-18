@@ -8,6 +8,7 @@ import Aside from '../../components/Aside/';
 import Footer from '../../components/Footer/';
 
 import Dashboard from '../../views/Dashboard/';
+import Profile from '../../views/Profile/Profile';
 import Clients from '../../views/Clients/';
 import Employees from '../../views/Employees/';
 import Jobs from '../../views/Jobs/';
@@ -27,6 +28,7 @@ class Full extends Component {
             <Container fluid>
               <Switch>
                 <Route path="/dashboard" name="Dashboard" component={Dashboard}/>
+                <Route path="/profile" name="My Profile" component={Profile} />
                 <Route path="/clients" name="Clients" component={Clients} />
                 <Route path="/employees" name="Employees" component={Employees} />
                 <Route path="/orders/newOrder" name="New Order" component={NewOrder} />

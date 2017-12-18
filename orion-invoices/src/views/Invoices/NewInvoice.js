@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import {
   Row, Col, Card, CardHeader, CardBody, CardFooter,
-  Table, Input
+  Table, Input, Button
 } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
 
 class NewInvoice extends Component {
 
@@ -78,15 +79,17 @@ class NewInvoice extends Component {
                         </tr>
 
                         <tr>
-                          <td><Input type="text" name="orderNumber" /></td>
-                          <td><Input type="desc" name="desc" /></td>
-                          <td><Input type="number" name="quantity" /></td>
-                          <td><Input type="number" name="unitPrice" /></td>
-                          <td><Input type="number" name="totalPrice" /></td>
+                          <td><Input type="text" name="invoiceNumber" placeholder="Invoice Number" /></td>
+                          <td><Input type="desc" name="desc" placeholder="Description" /></td>
+                          <td><Input type="number" name="quantity" placeholder="Quantity"/></td>
+                          <td><Input type="number" name="unitPrice" placeholder="Unit Price"/></td>
+                          <td>
+                            {/* Auto calculate subtotal here */}
+                          </td>
                         </tr>
 
                         <tr>
-                          <td>Add Item</td>
+                          <td><Button className="fullWidthButton" color="primary">Add Item</Button></td>
                           <td> {/* Spacer */} </td>
                           <td> {/* Spacer */} </td>
                           <td colSpan="2">
@@ -120,7 +123,8 @@ class NewInvoice extends Component {
                                 </tr>
                               </tbody>
                             </Table>
-                            <Row className="totals">
+
+                            {/* <Row className="totals">
                               <Col md="6">Subtotal:</Col>
                               <Col md="6">$135</Col>
                             </Row>
@@ -133,7 +137,7 @@ class NewInvoice extends Component {
                             <Row className="totals">
                               <Col md="6">Total:</Col>
                               <Col md="6">$148.35</Col>
-                            </Row>
+                            </Row> */}
                           </td>
                         </tr>
 
@@ -192,10 +196,22 @@ class NewInvoice extends Component {
           </Card>
         </Col>
 
-        <Col xs="0" sm="0" md="4">
+        <Col xs="12" sm="0" md="4">
           <Card>
             <CardBody>
-              Buttons
+              <Row>
+                <Col>
+                  <NavLink to="/invoices">
+                    <Button outline className="fullWidthButton" color="primary">Save Invoice</Button>
+                  </NavLink>
+                </Col>
+
+                <Col>
+                  <NavLink to="/invoices">
+                    <Button outline className="fullWidthButton" color="danger">Cancel</Button>
+                  </NavLink>
+                </Col>
+              </Row>
             </CardBody>
           </Card>
         </Col>

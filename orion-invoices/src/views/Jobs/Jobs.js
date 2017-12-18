@@ -36,8 +36,6 @@ class Jobs extends Component {
                 <NavLink to="/orders/newOrder">
                   <Button className="fullWidthButton" color="primary" onClick={this.toggle}>New Order</Button>
                 </NavLink>
-
-
               </CardBody>
             </Card>
           </Col>

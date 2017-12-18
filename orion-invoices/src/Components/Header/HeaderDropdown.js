@@ -6,6 +6,7 @@ import {
   DropdownToggle,
   Dropdown
 } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
 
 class HeaderDropdown extends Component {
 
@@ -27,10 +28,11 @@ class HeaderDropdown extends Component {
   dropAccnt() {
     return (
       <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-        <DropdownToggle nav>
-          <img src={'img/avatars/2.jpg'} className="img-avatar" alt="Profile Picture"/>
-        </DropdownToggle>
-
+        {/* <DropdownToggle> */}
+        <NavLink to="/profile" nav>
+              <img src={'img/avatars/2.jpg'} style={ { width: '70%' } } className="img-avatar" alt="Profile Picture"/>
+          {/* </DropdownToggle> */}
+        </NavLink>
       </Dropdown>
     );
   }

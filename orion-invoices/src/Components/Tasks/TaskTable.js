@@ -38,7 +38,7 @@ class TaskTable extends Component {
 
               <tfoot>
                 <tr>
-                  <td colspan="2">
+                  <td colSpan="2">
                     <Button className="addButton fullWidthButton" color="primary">+</Button>
 
                   </td>
