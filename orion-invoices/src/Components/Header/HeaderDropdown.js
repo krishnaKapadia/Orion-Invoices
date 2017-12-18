@@ -25,11 +25,11 @@ class HeaderDropdown extends Component {
     });
   }
 
-  dropAccnt() {
+  dropAccnt() { 
     return (
       <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         {/* <DropdownToggle> */}
-        <NavLink to="/profile" nav>
+        <NavLink to="/profile" >
               <img src={'img/avatars/2.jpg'} style={ { width: '70%' } } className="img-avatar" alt="Profile Picture"/>
           {/* </DropdownToggle> */}
         </NavLink>

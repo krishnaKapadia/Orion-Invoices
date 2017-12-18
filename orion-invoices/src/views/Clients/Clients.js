@@ -12,18 +12,50 @@ class Clients extends Component {
     super(props);
 
     this.state = {
-      clientCount: '', addClientModal: false
+      clientCount: '', addClientModal: false, clients: []
     };
 
     this.toggle = this.toggle.bind(this);
+    this.addClient = this.addClient.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount() {
-    this.setState({ clientCount: 2 });
+    var clients = this.state.clients;
+    var client = { code: "A100", name: "Arrow Uniforms",
+                   address: "11 Jackson Street Petone", phone: "0221800317" };
+    clients.push(client);
+
+    this.setState({ clientCount: 2, client });
   }
 
+  // Toggles Add client modal
   toggle() {
     this.setState({ addClientModal: !this.state.addClientModal });
+  }
+
+  // Adds to list of clients, given a FormData object
+  addClient(data) {
+    var newClient = {
+      code: data.get("clientCode"), name: data.get("clientName"),
+      address: data.get("clientAddress"), phone: data.get("clientPhone")
+    }
+
+    var clients = this.state.clients;
+    clients.push(newClient);
+
+    this.setState({ clients });
+  }
+
+  handleSubmit(e) {
+      e.preventDefault();
+      // Serializes the form to give us an object containing the form's values
+      const data = new FormData(e.target);
+      // Delates addition to addClient method
+      this.addClient(data);
+
+      // Dismisses the modal
+      this.toggle();
   }
 
   render() {
@@ -80,11 +112,18 @@ class Clients extends Component {
               </thead>
 
               <tbody>
-                <TableRow type="client" clientCode="A100" clientName="Arrow Uniforms"
+                {
+                  this.state.clients.map( (c) => (
+                    <TableRow key={c.code} type="client" clientCode={c.code} clientName={c.name}
+                    clientAddress={c.address} clientPhone={c.phone} />
+                  ))
+                }
+
+                {/* <TableRow type="client" clientCode="A100" clientName="Arrow Uniforms"
                 clientAddress="11 Jackson Street, Petone" clientPhone="0221800317" />
 
                 <TableRow type="client" clientCode="V987" clientName="Vanguard"
-                clientAddress="19 Jackson Street, Petone" clientPhone="0274500317" />
+                clientAddress="19 Jackson Street, Petone" clientPhone="0274500317" /> */}
 
               </tbody>
 
@@ -92,11 +131,16 @@ class Clients extends Component {
           </CardBody>
         </Card>
 
+
+
+
+
+
         <Modal className="modal-primary" isOpen={this.state.addClientModal} toggle={this.toggle}>
           <ModalHeader>Add new client</ModalHeader>
 
-          <ModalBody>
-            <Form>
+          <Form onSubmit={this.handleSubmit}>
+            <ModalBody>
               <FormGroup>
                 <Label>Client Code: </Label>
                 <Input type="text" name="clientCode"/>
@@ -113,13 +157,14 @@ class Clients extends Component {
                 <Label>Client Phone: </Label>
                 <Input type="number" name="clientPhone"/>
               </FormGroup>
-            </Form>
-          </ModalBody>
+            </ModalBody>
 
-          <ModalFooter>
-            <Button color="primary" onClick={this.toggle}>Add</Button>
-            <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-          </ModalFooter>
+            <ModalFooter>
+              <Button color="primary" type="submit">Add</Button>
+              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+            </ModalFooter>
+          </Form>
+
         </Modal>
 
       </div>
