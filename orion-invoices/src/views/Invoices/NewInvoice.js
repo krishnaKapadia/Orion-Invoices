@@ -7,6 +7,29 @@ import { NavLink } from 'react-router-dom';
 
 class NewInvoice extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.addRow = this.addRow.bind(this);
+    this.removeRow = this.removeRow.bind(this);
+
+    this.state = {
+      rows: ['']
+    }
+  }
+
+  addRow() {
+    var rows = this.state.rows;
+    rows.push('newRow')
+    this.setState( {rows });
+  }
+
+  removeRow() {
+    var rows = this.state.rows;
+    rows.pop();
+    this.setState({rows});
+  }
+
   render() {
     return (
       <Row>
@@ -67,16 +90,21 @@ class NewInvoice extends Component {
                           <th>Quantity</th>
                           <th>Unit Price</th>
                           <th>Sub total</th>
+                          <th> </th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td>A56D</td>
-                          <td>White T-Shirt with Multi-color logo</td>
-                          <td>30</td>
-                          <td>$4.50</td>
-                          <td>$135</td>
-                        </tr>
+
+                        {this.state.rows.map( (r) => (
+                          <tr>
+                            <td>A56D</td>
+                            <td>White T-Shirt with Multi-color logo</td>
+                            <td>30</td>
+                            <td>$4.50</td>
+                            <td>$135</td>
+                            {/* <td><Button className="glyphicon-remove" color="danger" onClick={this.removeRow}>Remove Item</Button></td> */}
+                          </tr>
+                        ))}
 
                         <tr>
                           <td><Input type="text" name="invoiceNumber" placeholder="Invoice Number" /></td>
@@ -89,7 +117,7 @@ class NewInvoice extends Component {
                         </tr>
 
                         <tr>
-                          <td><Button className="fullWidthButton" color="primary">Add Item</Button></td>
+                          <td><Button className="fullWidthButton" color="primary" onClick={this.addRow}>Add Item</Button></td>
                           <td> {/* Spacer */} </td>
                           <td> {/* Spacer */} </td>
                           <td colSpan="2">
