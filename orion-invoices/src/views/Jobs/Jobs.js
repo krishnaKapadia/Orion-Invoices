@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import Order from '../../components/Table/Order';
 import { NavLink } from 'react-router-dom';
-
 import {
   Card, CardHeader, CardBody, Row, Col, Button,
   Table
 } from 'reactstrap';
 
 class Jobs extends Component {
+
+  // TODO fetch all current orders from API on every page load.
+  // Later will implement redux to stop multiple pointless API requests by only needing the redux store and making redux post to the API
 
   constructor(props) {
     super(props);
