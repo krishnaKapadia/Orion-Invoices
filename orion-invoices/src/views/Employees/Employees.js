@@ -4,7 +4,6 @@ import { Table, Row, Col, Card, CardHeader, CardBody, Button,
 Modal, ModalHeader, ModalBody, ModalFooter,
 Form, FormGroup, Input, Label } from 'reactstrap';
 
-
 class Employees extends Component {
   constructor(props){
     super(props)

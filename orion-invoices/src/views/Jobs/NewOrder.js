@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import Select from 'react-select';
+import 'react-select/dist/react-select.css';
 import { Row, Col, Card, CardHeader, CardBody, CardFooter,
   Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
@@ -115,17 +117,6 @@ class NewOrder extends Component {
   render() {
     return (
       <div className="animated fadeIn">
-        {/* <Row>
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <CardBody>
-                <h2><i className="icon-doc blue paddingRight" /> New Order</h2>
-              </CardBody>
-            </Card>
-          </Col>
-        </Row> */}
-
-
         <Row>
           <Col xs="12" md="12" lg="12">
             <Card>
@@ -135,6 +126,14 @@ class NewOrder extends Component {
                 <CardBody>
                     <FormGroup>
                       <Label htmlFor="clientName">Client Name</Label>
+                        {/* <Select.Creatable
+                          value={this.state.clientName}
+                          options={[
+                            { value: 'one', label: 'One' },
+                            { value: 'two', label: 'Two' },
+                          ]}
+                        /> */}
+
                       <Input type="text" id="clientName" placeholder="Enter the clients name" onChange={this.setClientName} />
                     </FormGroup>
                     <br />
