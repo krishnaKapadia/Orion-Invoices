@@ -17,6 +17,17 @@ import Invoices from '../../views/Invoices/Invoices';
 import NewInvoice from '../../views/Invoices/NewInvoice';
 
 class Full extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.toJobsFromNewOrder = this.toJobsFromNewOrder.bind(this);
+  }
+
+  toJobsFromNewOrder() {
+
+  }
+
   render() {
     return (
       <div className="app">

@@ -5,10 +5,43 @@ import { NavLink } from 'react-router-dom';
 import {
   Card, CardHeader, CardBody, Row, Col, Button,
   Table
-
 } from 'reactstrap';
 
 class Jobs extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      orders: []
+    }
+  }
+
+  componentDidMount() {
+    var order = {
+      code: 1, clientName: "Mitsubishi",
+      orderlist: { o1: "Caps with red logo x 10: $5.00 each", o2: "Caps with white logo x 50: $4.50 each" },
+      created: "15 Nov 2017"
+    }
+
+    var orders = this.state.orders;
+    orders.push(order);
+
+    this.setState( { orders });
+  }
+
+  addOrder(data, items, date) {
+    var order = {
+      code: data.get("code"), clientName: data.get("clientName"),
+      orderlist: items,
+      created: date
+    }
+
+    var orders = this.state.orders;
+    orders.push(order);
+
+    this.setState( { orders });
+  }
 
   render() {
     return (
@@ -25,7 +58,7 @@ class Jobs extends Component {
           <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
             <Card>
               <CardBody>
-                <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: 1000</h3>
+                <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: 500</h3>
               </CardBody>
             </Card>
           </Col>

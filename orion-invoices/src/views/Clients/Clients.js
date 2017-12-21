@@ -15,6 +15,7 @@ class Clients extends Component {
       clientCount: '', addClientModal: false, clients: []
     };
 
+    // Bindings
     this.toggle = this.toggle.bind(this);
     this.addClient = this.addClient.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -43,7 +44,6 @@ class Clients extends Component {
 
     var clients = this.state.clients;
     clients.push(newClient);
-
     this.setState({ clients });
   }
 
@@ -135,7 +135,7 @@ class Clients extends Component {
 
 
 
-
+        {/* Add client Modal */}
         <Modal className="modal-primary" isOpen={this.state.addClientModal} toggle={this.toggle}>
           <ModalHeader>Add new client</ModalHeader>
 

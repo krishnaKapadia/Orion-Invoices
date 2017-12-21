@@ -42,7 +42,7 @@ class Order extends Component {
           <td>
             <Row >
               <Col className="topButton">
-                <Button outline className="fullWidthButton" color="secondary blue" onClick={this.toggleEdit}>Edit</Button>
+                <Button outline className="fullWidthButton" color="primary blue" onClick={this.toggleEdit}>Edit</Button>
               </Col>
             </Row>
 
