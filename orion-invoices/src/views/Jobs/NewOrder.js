@@ -5,13 +5,24 @@ import { NavLink } from 'react-router-dom';
 
 class NewOrder extends Component {
 
-  // Endpoint: items object containing objects for each item.
+  // TODO backend wireup API post on submit
+
+  // Endpoint to send to API: clientName and items object containing objects for each item.
   // eg:
   /*
+    clientName: "Bill",
     items [
       { desc: item1, quantity: 10, cost: 4.50 },
       { desc: item2, quantity: 5, cost: 8.50 }
     ]
+
+    On Form Submit, this object will be sent to API for storage
+
+    Possible methods:
+      - Directly send to API and therefore when the user navigates to the order page, it will have to do a fetch request every time.
+      - Get redux to do it while simulaniously updating its local state therefore not needed to fetch on every visit to the page.
+
+    Currently will use first option, but will explore redux at a later date as it is faster as components will access local store and API calls will only be made when that store is changed
   */
 
   constructor(props) {
@@ -95,6 +106,12 @@ class NewOrder extends Component {
     console.log(this.state.items);
   }
 
+  // Submits the order to the API
+  submitOrderToAPI() {
+    // TODO wire up when backend API is completed
+    console.log("WIRE UP THE SUBMIT ORDER TO API");
+  }
+
   render() {
     return (
       <div className="animated fadeIn">
@@ -113,120 +130,79 @@ class NewOrder extends Component {
           <Col xs="12" md="12" lg="12">
             <Card>
               <CardHeader>New Order</CardHeader>
-              <CardBody>
-                <Form>
-                  <FormGroup>
-                    <Label htmlFor="clientName">Client Name</Label>
-                    <Input type="text" id="clientName" placeholder="Enter the clients name" onChange={this.setClientName} />
-                  </FormGroup>
-                  <br />
-                  <Label htmlFor="orderlist"><h4>Order List:</h4></Label>
+              <Form>
 
-                  <FormGroup>
-                    <div>
-                      <Row className="topButton">
-                        <Col>
-                          <Label>Item Description</Label>
-                        </Col>
+                <CardBody>
+                    <FormGroup>
+                      <Label htmlFor="clientName">Client Name</Label>
+                      <Input type="text" id="clientName" placeholder="Enter the clients name" onChange={this.setClientName} />
+                    </FormGroup>
+                    <br />
+                    <Label htmlFor="orderlist"><h4>Order List:</h4></Label>
 
-                        <Col>
-                          <Label>Item Quantity</Label>
-                        </Col>
+                    <FormGroup>
+                      <div>
+                        <Row className="topButton">
+                          <Col>
+                            <Label>Item Description</Label>
+                          </Col>
 
-                        <Col>
-                          <Label>Cost per Item</Label>
-                        </Col>
-                      </Row>
+                          <Col>
+                            <Label>Item Quantity</Label>
+                          </Col>
 
-                      {/* Dynamic rows */}
-                      {
-                        this.state.items.map( (i) => (
-                          <Row key={i.key} className="topButton">
-                            <Col>
-                              <Input key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" id="itemDescription" name="name" placeholder="Desc" />
-                            </Col>
-
-                            <Col>
-                              <Input key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" id="itemQuantity" name="quantity" placeholder="Quantity" />
-                            </Col>
-
-                            <Col>
-                              <Input key={i.key} onChange={(e) => this.setItemCost(i.key, e)} type="number" step="0.01" id="itemQuantity" name="cost" placeholder="Cost Per Unit" />
-                            </Col>
-                          </Row>
-                        ))
-                      }
-
-                      <Row>
-                        <Col xs="12" md="2" lg="2">
-                          <Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button>
-                        </Col>
-
-                        <Col xs="12" md="2" lg="2">
-                          <Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button>
-                        </Col>
-
-                      </Row>
-                    </div>
-
-                  </FormGroup>
-
-                  {/* <FormGroup>
-                    <Table bordered>
-                      <thead>
-                        <tr>
-                          <th>Item Description</th>
-                          <th>Item Quantity</th>
-                          <th>Cost per Item</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <tr>
-                          <td><Input type="text" id="itemDescription" placeholder="" /></td>
-                          <td><Input type="number" id="itemQuantity" placeholder="" /></td>
-                          <td><Input type="number" id="itemCost" placeholder="" /></td>
-                        </tr>
-                      </tbody>
-
-                      <tfoot>
-                        <Row>
-                          <Col xs="12" md="12" lg="12">
-                            <Button className="fullWidthButton">+</Button>
+                          <Col>
+                            <Label>Cost per Item</Label>
                           </Col>
                         </Row>
-                      </tfoot>
-                    </Table>
-                  </FormGroup> */}
-                  {/* <FormGroup row>
-                    <Col xs="8">
-                      <FormGroup>
-                        <Label htmlFor="city">City</Label>
-                        <Input type="text" id="city" placeholder="Enter your city"/>
-                      </FormGroup>
-                    </Col>
-                    <Col xs="8">
-                      <FormGroup>
-                        <Label htmlFor="postal-code">Postal Code</Label>
-                        <Input type="text" id="postal-code" placeholder="Postal Code"/>
-                      </FormGroup>
-                    </Col>
-                  </FormGroup> */}
 
-                </Form>
+                        {/* Dynamic rows */}
+                        {
+                          this.state.items.map( (i) => (
+                            <Row key={i.key} className="topButton">
+                              <Col>
+                                <Input key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" id="itemDescription" name="name" placeholder="Desc" />
+                              </Col>
 
-              </CardBody>
+                              <Col>
+                                <Input key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" id="itemQuantity" name="quantity" placeholder="Quantity" />
+                              </Col>
 
-              <CardFooter>
-                  <NavLink to="/Orders">
-                    <Button type="submit" size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
-                  </NavLink>
+                              <Col>
+                                <Input key={i.key} onChange={(e) => this.setItemCost(i.key, e)} type="number" step="0.01" id="itemQuantity" name="cost" placeholder="Cost Per Unit" />
+                              </Col>
+                            </Row>
+                          ))
+                        }
 
-                  <NavLink to="/Orders">
-                    <Button className="paddingLeft" type="reset" size="md" color="danger"><i className="fa fa-ban"></i> Cancel Order</Button>
-                  </NavLink>
+                        <Row>
+                          <Col xs="12" md="2" lg="2">
+                            <Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button>
+                          </Col>
 
-              </CardFooter>
+                          <Col xs="12" md="2" lg="2">
+                            <Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button>
+                          </Col>
+
+                        </Row>
+                      </div>
+
+                    </FormGroup>
+                </CardBody>
+
+                <CardFooter>
+                    <NavLink to="/orders">
+                      <Button onClick={this.submitOrderToAPI} size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
+                    </NavLink>
+
+                    <NavLink to="/orders">
+                      <Button className="paddingLeft" type="reset" size="md" color="danger"><i className="fa fa-ban"></i> Cancel Order</Button>
+                    </NavLink>
+
+                </CardFooter>
+              </Form>
+
+
             </Card>
           </Col>
         </Row>
