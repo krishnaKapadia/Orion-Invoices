@@ -19,6 +19,22 @@
   // height: 80%;
 }
 
+// SIDEBAR COLORS
+.sidebar {
+  background-color: #1abc9c;
+}
+
+.sidebar .nav-link.active, .sidebar .navbar .active.dropdown-toggle, .navbar .sidebar .active.dropdown-toggle {
+  background-color: #16a085;
+}
+
+.nav-link:hover {
+  background-color: White
+}
+// ____________
+
+
+
 .cardButton {
   background-color: red;
 }

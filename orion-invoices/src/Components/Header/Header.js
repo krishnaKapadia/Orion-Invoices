@@ -50,9 +50,9 @@ class Header extends Component {
         {/* <HeaderDropdown/> */}
 
         <Nav className="d-md-down-none" pills>
-          {/* <NavItem>
+          <NavItem>
             <NavLink href="#" onClick={this.asideToggle}>Settings</NavLink>
-          </NavItem> */}
+          </NavItem>
 
           <NavItem>
               <NavLink href="#">Log out</NavLink>

@@ -25,7 +25,7 @@ class HeaderDropdown extends Component {
     });
   }
 
-  dropAccnt() { 
+  dropAccnt() {
     return (
       <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         {/* <DropdownToggle> */}
