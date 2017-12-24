@@ -14,12 +14,26 @@
 .blueSquare {
   background-color: $blue;
 }
+
+.greenSquare {
+  background-color: #1abc9c;
+}
+
+
 .profileBox {
   // min-height: 200px;
   // height: 80%;
 }
 
 // SIDEBAR COLORS
+.smallSquare {
+
+}
+
+.themePickerRow {
+  width: 60%;
+}
+
 .sidebar {
   background-color: #1abc9c;
 }

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import {
   Nav, NavItem, NavbarToggler, NavbarBrand, NavLink, Badge, TabContent, TabPane,
-  Label, Input, Progress
+  Label, Input, Progress, Button, Row, Col
 } from 'reactstrap';
 import classnames from 'classnames';
 import Settings from '../Tabs/Settings';
+
+// Handles main sidebar menu, also theme selection
 
 class Aside extends Component {
   constructor(props) {
@@ -12,7 +14,8 @@ class Aside extends Component {
 
     this.toggle = this.toggle.bind(this);
     this.state = {
-      activeTab: '3'
+      activeTab: '3',
+      themeColor: ""
     };
   }
 
@@ -73,6 +76,33 @@ class Aside extends Component {
             </div>
 
             <hr/>
+
+            <div className="aside-options">
+              <div className="clearfix mt-4">
+                <small><b>Theme Color</b></small>
+                <Label className="switch switch-text switch-pill switch-success switch-sm float-right"></Label>
+              </div>
+              <div>
+                <Row className="themePickerRow">
+                  <Col md="3">
+                    <Button className="smallSquare blueSquare"> B </Button>
+                  </Col>
+
+                  <Col md="3">
+                    <Button className="smallSquare paddingLeft greenSquare"> G </Button>
+                  </Col>
+
+                  <Col md="3">
+                    <Button className="smallSquare paddingLeft blueSquare"> P </Button>
+                  </Col>
+
+                  <Col md="3">
+                    <Button className="smallSquare paddingLeft blueSquare"> D </Button>
+                  </Col>
+                </Row>
+              </div>
+            </div>
+
             {/* <h6>System Utilization</h6>
 
             <div className="text-uppercase mb-1 mt-4">
