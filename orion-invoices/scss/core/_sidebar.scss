@@ -119,6 +119,8 @@
     color: $sidebar-nav-link-color;
     text-decoration: none;
     background: $sidebar-nav-link-bg;
+    transition: background .2s ease-in-out; //EDITED
+
     @include borders($sidebar-nav-link-borders);
     @if $enable-sidebar-nav-rounded {
       border-radius: $border-radius;
@@ -144,13 +146,21 @@
       @include borders($sidebar-nav-link-active-borders);
 
       i {
-        color: $sidebar-nav-link-active-icon-color;
+        // color: $sidebar-nav-link-active-icon-color;
+        color: white;
+      }
+
+      &:hover {
+        background: black;
       }
     }
 
+
     &:hover {
       color: $sidebar-nav-link-hover-color;
-      background: $sidebar-nav-link-hover-bg;
+      // TODO COLOR CHANGING NAV HOVER HERE
+      // background: $sidebar-nav-link-hover-bg;
+      background: black;
       @include borders($sidebar-nav-link-hover-borders);
 
       i {
