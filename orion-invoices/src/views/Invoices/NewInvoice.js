@@ -111,27 +111,39 @@ class NewInvoice extends Component {
   }
 
   // Sets the quantity of an item, stored in items array object
+  // Also sets the total price item state
   setItemQuantity(id, e) {
     const quantity = e.target.quantity;
     var items = this.state.items;
     items[id].quantity = quantity;
 
+    if(items[id].unitPrice !== "") {
+      const totalPrice = this.items[id].unitPrice * quantity;
+      items[id].totalPrice = totalPrice;
+    }
+
     this.setState( { items } );
     console.log(this.state.items);
   }
 
-  // Sets the unit price of an item, stored in the items array object
+  // Sets the unit price of an item, stored in the items array object.
+  // Also sets the total price item state
   setItemUnitPrice(id, e) {
-    const price = e.target.quantity;
-    var items = this.state.item;
+    const price = e.target.unitPrice;
+    var items = this.state.items;
     items[id].unitPrice = price;
+
+    if(items[id].quantity !== '') {
+      const totalPrice = items[id].quantity * price;
+      items[id].totalPrice = totalPrice;
+    }
 
     this.setState( { items } );
     console.log(this.state.items);
   }
 
   // Sets the total price of an item, stored in the items array object
-  setItemTotalPrice(id, e) {
+  setItemTotalPrice(id) {
     var items = this.state.items;
 
     // Calculation: total price = unit price * quantity
@@ -224,10 +236,10 @@ class NewInvoice extends Component {
                             <td >$4.50</td>
                             <td >$135</td> */}
                             <td><Input key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="orderNumber" placeholder="Order Number" /></td>
-                            <td><Input key={i.key} type="text" name="desc" placeholder="Description" /></td>
-                            <td><Input key={i.key} type="number" name="quantity" placeholder="Quantity"/></td>
-                            <td><Input key={i.key} type="number" name="unitPrice" placeholder="Unit Price"/></td>
-                            <td></td>
+                            <td><Input key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
+                            <td><Input key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>
+                            <td><Input key={i.key} onChange={(e) => this.setItemUnitPrice(i.key, e)} type="number" name="unitPrice" placeholder="Unit Price"/></td>
+                            <td>{ i.totalPrice !== "" && <p>{i.totalPrice}</p> }</td>
                             {/* <td><Button className="glyphicon-remove" color="danger" onClick={this.removeRow}>Remove Item</Button></td> */}
                           </tr>
                         ))}
