@@ -1,7 +1,7 @@
 {
-  "name": "@coreui/react",
+  "name": "Orion Invoices",
   "version": "1.0.0",
-  "description": "Orion Invoicing, Client and Invoice management tool",
+  "description": "Orion Invoices, Client and Invoice management tool",
   "author": "Orion Technology",
   "homepage": "http://krishnakapadia.com",
   "copyright": "Copyright 2017 Orion Technology",

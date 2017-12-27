@@ -14,8 +14,8 @@ class NewOrder extends Component {
   /*
     clientName: "Bill",
     items [
-      { desc: item1, quantity: 10, cost: 4.50 },
-      { desc: item2, quantity: 5, cost: 8.50 }
+      { key: 1, desc: "item1", quantity: 10, cost: 4.50 },
+      { key: 2, desc: "item2", quantity: 5, cost: 8.50 }
     ]
 
     On Form Submit, this object will be sent to API for storage

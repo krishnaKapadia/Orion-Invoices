@@ -1,9 +1,6 @@
 /*!
- * CoreUI - Open Source Bootstrap Admin Template
- * @version v1.0.5
- * @link http://coreui.io
- * Copyright (c) 2017 creativeLabs Łukasz Holeczek
- * @license MIT
+ * Orion Invoices - 2017
+ * @version v1.0
  */
 
 // Override Boostrap variables
@@ -20,3 +17,6 @@
 
 // Custom styles
 @import "custom";
+
+// Invoice style
+@import "invoice";
