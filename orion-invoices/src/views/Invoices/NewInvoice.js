@@ -8,7 +8,7 @@ import { formatToPrice } from '../../Utils/utils';
 
 class NewInvoice extends Component {
 
-  // TODO backend wireup API post on submit
+  // TODO backend wireup API post on submit, wireup invoice number also
 
   // Endpoint to send to API: clientName, number, address and items object, containing objects for each item.
   // eg:
@@ -347,7 +347,7 @@ class NewInvoice extends Component {
 
                   <Col className="rightBox" md="5">
                     <h4>Address:</h4>
-                    <p>Address: 19-21 Jackson Street <br />
+                    <p>19-21 Jackson Street <br />
                     Petone, Wellington <br />
                     6035</p>
                   </Col>
