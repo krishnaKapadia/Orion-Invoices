@@ -6,3 +6,34 @@
 .invoiceTable td, th {
   text-align: center;
 }
+
+// Removes the number arrows
+/* For Firefox */
+input[type='number'] {
+    -moz-appearance:textfield;
+    margin: 0;
+    // padding: 0;
+}
+
+/* Webkit browsers like Safari and Chrome */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+    padding: 0;
+}
+
+@media screen and (max-width: 1000px) {
+    .tableInput::-webkit-input-placeholder { /* WebKit browsers */
+        color: transparent;
+    }
+    .tableInput:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+       color: transparent;
+    }
+    .tableInput::-moz-placeholder { /* Mozilla Firefox 19+ */
+       color: transparent;
+    }
+   .tableInput :-ms-input-placeholder { /* Internet Explorer 10+ */
+       color: transparent;
+    }
+}

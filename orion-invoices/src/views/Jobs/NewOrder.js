@@ -41,6 +41,7 @@ class NewOrder extends Component {
     this.addItem = this.addItem.bind(this);
     this.removeItem = this.removeItem.bind(this);
     this.setClientName = this.setClientName.bind(this);
+    this.submitOrderToAPI = this.submitOrderToAPI.bind(this);
   }
 
   componentDidMount() {
@@ -79,6 +80,7 @@ class NewOrder extends Component {
     var clientName = this.state.clientName;
     clientName = e.target.value;
     this.setState( { clientName } );
+    console.log(this.state);
   }
 
   // Sets the particular item desc

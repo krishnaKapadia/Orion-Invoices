@@ -39,17 +39,21 @@ class Dashboard extends Component {
 
           <Col xs="12" md="4" lg="4">
             <Card>
-              <CardBody>
-                <h2><i className="icon-docs blue paddingRight" /> Invoices : 2</h2>
-              </CardBody>
+              <NavLink to="/invoices" className="linkCard">
+                <CardBody>
+                  <h2><i className="icon-docs blue paddingRight" /> Invoices : 2</h2>
+                </CardBody>
+              </NavLink>
             </Card>
           </Col>
 
           <Col xs="12" md="4" lg="4">
             <Card>
-              <CardBody>
-                <h2><i className="icon-drawer blue paddingRight" /> Orders: 10</h2>
-              </CardBody>
+              <NavLink to="/orders" className="linkCard">  
+                <CardBody>
+                  <h2><i className="icon-drawer blue paddingRight" /> Orders: 10</h2>
+                </CardBody>
+              </NavLink>
             </Card>
           </Col>
 

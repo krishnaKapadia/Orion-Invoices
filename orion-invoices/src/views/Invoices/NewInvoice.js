@@ -4,6 +4,7 @@ import {
   Table, Input, Button
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import { formatToPrice } from '../../Utils/utils';
 
 class NewInvoice extends Component {
 
@@ -31,22 +32,28 @@ class NewInvoice extends Component {
   constructor(props) {
     super(props);
 
-    this.addItem             = this.addItem.bind(this);
-    this.removeItem          = this.removeItem.bind(this);
-    this.setItemDesc         = this.setItemDesc.bind(this);
-    this.setClientName       = this.setClientName.bind(this);
-    this.setItemQuantity     = this.setItemQuantity.bind(this);
-    this.setItemUnitPrice    = this.setItemUnitPrice.bind(this);
-    this.setItemTotalPrice   = this.setItemTotalPrice.bind(this);
-    this.setItemOrderNumber  = this.setItemOrderNumber.bind(this);
-
     this.state = {
       clientName: "",
       clientNumber: "",
-      address: "",
+      clientAddress: "",
       items: [],
-      itemCount: 0
+      itemCount: 0,
+      subtotal: 0,
+      tax: 0,
+      total: 0
     }
+
+    this.addItem             = this.addItem.bind(this);
+    this.removeItem          = this.removeItem.bind(this);
+    this.setItemDesc         = this.setItemDesc.bind(this);
+    this.updateTotals        = this.updateTotals.bind(this);
+    this.setClientName       = this.setClientName.bind(this);
+    this.setItemQuantity     = this.setItemQuantity.bind(this);
+    this.setclientAddress    = this.setclientAddress.bind(this);
+    this.setItemUnitPrice    = this.setItemUnitPrice.bind(this);
+    // this.setItemTotalPrice   = this.setItemTotalPrice.bind(this);
+    this.setItemOrderNumber  = this.setItemOrderNumber.bind(this);
+    this.submitInvoiceToAPI  = this.submitInvoiceToAPI.bind(this);
   }
 
   componentDidMount() {
@@ -87,7 +94,17 @@ class NewInvoice extends Component {
   setClientName(e) {
     var clientName = this.state.clientName;
     clientName = e.target.value;
-    this.setState( { clientName });
+    this.setState({clientName});
+  }
+
+  // Sets the clients address, stored in state
+  setclientAddress(e) {
+    const address = e.target.value;
+    var clientAddress = this.state.clientAddress;
+    clientAddress = address;
+
+    this.setState( { clientAddress } );
+    console.log(this.state);
   }
 
   // Sets the Order Number of an item, stored in items array object
@@ -113,23 +130,26 @@ class NewInvoice extends Component {
   // Sets the quantity of an item, stored in items array object
   // Also sets the total price item state
   setItemQuantity(id, e) {
-    const quantity = e.target.quantity;
+    const quantity = e.target.value;
     var items = this.state.items;
     items[id].quantity = quantity;
 
     if(items[id].unitPrice !== "") {
-      const totalPrice = this.items[id].unitPrice * quantity;
+      const totalPrice = items[id].unitPrice * quantity;
       items[id].totalPrice = totalPrice;
     }
 
     this.setState( { items } );
+
+    // Updates the totals
+    this.updateTotals();
     console.log(this.state.items);
   }
 
   // Sets the unit price of an item, stored in the items array object.
   // Also sets the total price item state
   setItemUnitPrice(id, e) {
-    const price = e.target.unitPrice;
+    const price = e.target.value;
     var items = this.state.items;
     items[id].unitPrice = price;
 
@@ -139,28 +159,43 @@ class NewInvoice extends Component {
     }
 
     this.setState( { items } );
+
+    // Update the totals
+    this.updateTotals();
+
     console.log(this.state.items);
   }
 
-  // Sets the total price of an item, stored in the items array object
-  setItemTotalPrice(id) {
-    var items = this.state.items;
+  // Updates the overall totals on the invoice including, subtotal, tax and overall total
+  updateTotals() {
+    var currentTotal = 0;
 
-    // Calculation: total price = unit price * quantity
-    const unitPrice = items[id].unitPrice;
-    const quantity = items[id].unitPrice;
-    const totalPrice = unitPrice * quantity;
-    items[id].totalPrice = totalPrice;
+    for(var i = 0; i < this.state.items.length; i++) {
+      currentTotal = currentTotal + this.state.items[i].totalPrice;
+    }
 
-    this.setState( { items } );
-    console.log(this.state.items);
+    // subtotal
+    var subtotal = this.state.subtotal;
+    subtotal = currentTotal;
+
+    // tax amount
+    const tax = subtotal * 0.15
+
+    // all together total including tax
+    const total = subtotal + tax;
+
+    this.setState( { subtotal, tax, total } );
   }
 
+  // Submits the invoice to the API
+  submitInvoiceToAPI() {
+    console.log(this.state);
+  }
 
   render() {
     return (
       <Row>
-        <Col xs="12" md="9">
+        <Col xs="12" md="12" lg="9">
           <Card className="animated fadeIn invoiceCard">
             <CardHeader>
               <h3>Invoice</h3>
@@ -186,9 +221,9 @@ class NewInvoice extends Component {
                   {/* Client Details */}
                   <Col md="4">
                     <h5 className="bold">To:</h5>
-                    <Input className="invoiceInput" type="text" id="clientName" placeholder="Enter the clients name" />
-                    <Input className="invoiceInput" type="text" id="clientAddress" placeholder="Enter the clients address" />
-                    <Input className="invoiceInput" type="text" id="clientSuburb" placeholder="Enter the clients suburb" />
+                    <Input className="invoiceInput" onChange={this.setClientName} type="text" id="clientName" name="clientName" placeholder="Enter the clients name" />
+                    <Input className="invoiceInput" onChange={this.setclientAddress} type="textarea" id="clientAddress" name="clientAddress" placeholder="Enter the clients address" />
+                    {/* <Input className="invoiceInput" type="text" id="clientSuburb" placeholder="Enter the clients suburb" /> */}
                     {/* <Input className="invoiceInput" type="text" id="clientCountry" placeholder="Enter the clients Country" /> */}
                     <p>
                       {/* Krishna Kapadia<br /> */}
@@ -215,15 +250,15 @@ class NewInvoice extends Component {
                 <Row className="invoiceTableRow">
                   <Col>
                     {/* Table */}
-                    <Table className="invoiceTable" size="md" hover>
+                    <Table className="invoiceTable" size="md">
                       <thead>
                         <tr>
                           <th>Order #</th>
-                          <th>Description</th>
-                          <th>Quantity</th>
-                          <th>Unit Price</th>
-                          <th>Sub total</th>
-                          <th> </th>
+                          <th width="30%">Description</th>
+                          <th width="15%">Quantity</th>
+                          <th width="15%">Unit Price</th>
+                          <th width="20%">Sub total</th>
+                          {/* <th></th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -235,11 +270,11 @@ class NewInvoice extends Component {
                             <td >30</td>
                             <td >$4.50</td>
                             <td >$135</td> */}
-                            <td><Input key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="orderNumber" placeholder="Order Number" /></td>
-                            <td><Input key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
-                            <td><Input key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>
-                            <td><Input key={i.key} onChange={(e) => this.setItemUnitPrice(i.key, e)} type="number" name="unitPrice" placeholder="Unit Price"/></td>
-                            <td>{ i.totalPrice !== "" && <p>{i.totalPrice}</p> }</td>
+                            <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="orderNumber" placeholder="Order Number" /></td>
+                            <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
+                            <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>
+                            <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemUnitPrice(i.key, e)} type="number" step="0.01" name="unitPrice" placeholder="Unit Price"/></td>
+                            <td width="5%">{ i.totalPrice !== "" ? <p>{formatToPrice(i.totalPrice)}</p> : <p>$0.00</p> }</td>
                             {/* <td><Button className="glyphicon-remove" color="danger" onClick={this.removeRow}>Remove Item</Button></td> */}
                           </tr>
                         ))}
@@ -258,7 +293,7 @@ class NewInvoice extends Component {
                                   <td>
                                     <Row className="totals">
                                       <Col md="6">Subtotal:</Col>
-                                      <Col md="6">$135</Col>
+                                      <Col md="6">{formatToPrice(this.state.subtotal)}</Col>
                                     </Row>
                                   </td>
                                 </tr>
@@ -267,7 +302,7 @@ class NewInvoice extends Component {
                                   <td>
                                     <Row className="totals">
                                       <Col md="6">Tax(15%):</Col>
-                                      <Col md="6">$13.45</Col>
+                                      <Col md="6">{formatToPrice(this.state.tax)}</Col>
                                     </Row>
                                   </td>
                                 </tr>
@@ -276,7 +311,7 @@ class NewInvoice extends Component {
                                   <td>
                                     <Row className="totals">
                                       <Col md="6">Total:</Col>
-                                      <Col md="6">$148.35</Col>
+                                      <Col md="6">{formatToPrice(this.state.total)}</Col>
                                     </Row>
                                   </td>
                                 </tr>
@@ -299,16 +334,6 @@ class NewInvoice extends Component {
                             </Row> */}
                           </td>
                         </tr>
-
-                        {/* <tr>
-                          <td className="noBox"> </td>
-                          <td className="noBox">  </td>
-                          <td className="noBox">  </td>
-                          <td colSpan="2">
-
-                          </td>
-                        </tr> */}
-
 
                       </tbody>
                     </Table>
@@ -355,14 +380,14 @@ class NewInvoice extends Component {
           </Card>
         </Col>
 
-        <Col xs="12" md="3">
+        <Col xs="12" md="12" lg="3">
           <Card>
             <CardHeader>Options</CardHeader>
             <CardBody>
               <Row>
                 <Col>
                   <NavLink to="/invoices">
-                    <Button outline className="fullWidthButton" color="primary">Save Invoice</Button>
+                    <Button outline onClick={this.submitInvoiceToAPI} className="fullWidthButton" color="primary">Save Invoice</Button>
                   </NavLink>
                 </Col>
 

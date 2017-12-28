@@ -130,7 +130,7 @@ class TableRow extends Component {
           <td>{this.props.invoiceNumber}</td>
           <td>{this.props.clientName}</td>
           <td>{this.props.date}</td>
-          <td><input type="checkbox" /></td>
+          <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Mark Paid</Button></td>
 
           <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
 

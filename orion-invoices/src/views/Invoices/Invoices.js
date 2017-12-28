@@ -43,9 +43,9 @@ class Invoices extends Component {
                       </NavLink>
                     </Col>
 
-                    <Col>
+                    {/* <Col>
                       <Button outline className="fullWidthButton" color="danger">Remove Invoice</Button>
-                    </Col>
+                    </Col> */}
                   </Row>
               </CardBody>
             </Card>
