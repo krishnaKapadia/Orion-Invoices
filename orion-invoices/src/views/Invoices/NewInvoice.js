@@ -8,6 +8,8 @@ import { formatToPrice } from '../../Utils/utils';
 
 class NewInvoice extends Component {
 
+  // TODO backend wireup API post on submit
+
   // Endpoint to send to API: clientName, number, address and items object, containing objects for each item.
   // eg:
   /*
@@ -33,6 +35,7 @@ class NewInvoice extends Component {
     super(props);
 
     this.state = {
+      invoiceNumber: "9369",
       clientName: "",
       clientNumber: "",
       clientAddress: "",
@@ -51,7 +54,6 @@ class NewInvoice extends Component {
     this.setItemQuantity     = this.setItemQuantity.bind(this);
     this.setclientAddress    = this.setclientAddress.bind(this);
     this.setItemUnitPrice    = this.setItemUnitPrice.bind(this);
-    // this.setItemTotalPrice   = this.setItemTotalPrice.bind(this);
     this.setItemOrderNumber  = this.setItemOrderNumber.bind(this);
     this.submitInvoiceToAPI  = this.submitInvoiceToAPI.bind(this);
   }
@@ -104,7 +106,6 @@ class NewInvoice extends Component {
     clientAddress = address;
 
     this.setState( { clientAddress } );
-    console.log(this.state);
   }
 
   // Sets the Order Number of an item, stored in items array object
@@ -114,7 +115,6 @@ class NewInvoice extends Component {
     items[id].orderNumber  = orderNumber;
 
     this.setState( { items });
-    console.log(this.state.items);
   }
 
   // Sets the Description of an item, stored in items array object
@@ -124,7 +124,6 @@ class NewInvoice extends Component {
     items[id].desc = desc;
 
     this.setState( { items } );
-    console.log(this.state.items);
   }
 
   // Sets the quantity of an item, stored in items array object
@@ -143,7 +142,6 @@ class NewInvoice extends Component {
 
     // Updates the totals
     this.updateTotals();
-    console.log(this.state.items);
   }
 
   // Sets the unit price of an item, stored in the items array object.
@@ -162,8 +160,6 @@ class NewInvoice extends Component {
 
     // Update the totals
     this.updateTotals();
-
-    console.log(this.state.items);
   }
 
   // Updates the overall totals on the invoice including, subtotal, tax and overall total
@@ -211,7 +207,7 @@ class NewInvoice extends Component {
 
                   <Col className="rightBox" md="4">
                     <h5 className="bold">Tax Invoice</h5>
-                    <p>Invoice #: 9361 <br />
+                    <p>Invoice #: {this.state.invoiceNumber} <br />
                       Created: January 1, 2017 <br />
                       Due: January 15, 2018</p>
                   </Col>
@@ -265,11 +261,6 @@ class NewInvoice extends Component {
 
                         {this.state.items.map( (i) => (
                           <tr key={i.key}>
-                            {/* <td >A56D</td>
-                            <td >White T-Shirt with Multi-color logo</td>
-                            <td >30</td>
-                            <td >$4.50</td>
-                            <td >$135</td> */}
                             <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="orderNumber" placeholder="Order Number" /></td>
                             <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
                             <td><Input className="tableInput" key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>

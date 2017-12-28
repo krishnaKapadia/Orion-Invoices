@@ -65,6 +65,8 @@ class NewOrder extends Component {
 
   // Removes the last item row in the order
   removeItem() {
+    console.log("DANK");
+
     var items = this.state.items;
 
     if(items.length > 1){

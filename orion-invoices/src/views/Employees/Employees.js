@@ -25,7 +25,6 @@ class Employees extends Component {
 
     var employees = this.state.employees;
     employees.push(employee);
-    console.log(employees.length);
 
     this.setState( { employees } );
 
