@@ -80,7 +80,7 @@ class Clients extends Component {
               <CardBody>
                   <Row>
                     <Col>
-                      <Button outline className="fullWidthButton" color="primary" onClick={this.toggle}>Add Client</Button>
+                      <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Client</Button>
                     </Col>
 
                     <Col>

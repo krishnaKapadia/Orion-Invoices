@@ -39,7 +39,7 @@ class Invoices extends Component {
                   <Row>
                     <Col>
                       <NavLink to="/invoices/createInvoice">
-                        <Button outline className="fullWidthButton" color="primary" onClick={this.toggle}>Create Invoice</Button>
+                        <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Create Invoice</Button>
                       </NavLink>
                     </Col>
 

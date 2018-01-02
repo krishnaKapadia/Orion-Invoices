@@ -82,7 +82,7 @@ class Employees extends Component {
               <CardBody>
                 <Row>
                   <Col>
-                    <Button outline className="fullWidthButton" color="primary" onClick={this.toggle}>Add Employee</Button>
+                    <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Employee</Button>
                   </Col>
                   <Col>
                     <Button className="fullWidthButton" outline color="danger">Remove Employee</Button>
