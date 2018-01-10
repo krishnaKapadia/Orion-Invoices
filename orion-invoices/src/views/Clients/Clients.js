@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import axios from 'axios';
 import TableRow from "../../components/Table/TableRow";
 import AddClientModal from "../../components/Modals/AddClientModal";
 import {
@@ -19,15 +20,31 @@ class Clients extends Component {
     this.toggle = this.toggle.bind(this);
     this.addClient = this.addClient.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.getAllClients = this.getAllClients.bind(this);
   }
 
-  componentDidMount() {
-    var clients = this.state.clients;
-    var client = { code: "A100", name: "Arrow Uniforms",
-                   address: "11 Jackson Street Petone", phone: "0221800317" };
-    clients.push(client);
+  componentWillMount() {
+    this.getAllClients();
+  }
 
-    this.setState({ clientCount: 2, client });
+  /**
+   * Retrieves all the clients associated with the user from the backend
+   */
+  getAllClients() {
+    const result = axios.get("http://localhost:4000/api/v1/clients").then( (data) => {
+      var clients = [];
+      var clientCount = 0;
+
+      data.data.clients.map( (client) => {
+        clients.push({
+          id: client._id, code: client.code, name: client.name,
+          address: client.address, phone_number: client.phone_num
+        });
+        clientCount++;
+      });
+
+      this.setState({ clients, clientCount });
+    });
   }
 
   // Toggles Add client modal
@@ -114,8 +131,8 @@ class Clients extends Component {
               <tbody>
                 {
                   this.state.clients.map( (c) => (
-                    <TableRow key={c.code} type="client" clientCode={c.code} clientName={c.name}
-                    clientAddress={c.address} clientPhone={c.phone} />
+                    <TableRow key={c.id} type="client" clientCode={c.code} clientName={c.name}
+                    clientAddress={c.address} clientPhone={c.phone_number} />
                   ))
                 }
 
