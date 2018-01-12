@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Form, FormGroup, Label, Button, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Form, FormGroup, Label, Button, Input, Modal,
+  ModalHeader, ModalBody, ModalFooter, Row, Col
+} from 'reactstrap';
+import axios from 'axios';
 
 class TableRow extends Component {
 
@@ -11,6 +14,8 @@ class TableRow extends Component {
     }
 
     this.toggle = this.toggle.bind(this);
+    this.deleteClient = this.deleteClient.bind(this);
+    this.updateClient = this.updateClient.bind(this);
   }
 
   toggle() {
@@ -19,24 +24,64 @@ class TableRow extends Component {
     })
   }
 
+  /**
+  * Deletes the client thats stored by this TableRow
+  */
+  deleteClient() {
+
+    axios.delete(`http://localhost:4000/api/v1/clients/${this.props.clientId}`).then( (response) => {
+      console.log(response);
+
+      // Remove from state
+      this.props.deleteClientFromState(this.props.clientId);
+
+
+      // TODO tell the user that the client was deleted via notifications
+    });
+  }
+
+  /**
+  * Updates the client thats stored by this TableRow
+  */
+  updateClient(e) {
+    e.preventDefault();
+
+    var data = new FormData(e.target);
+
+    var newClient = {
+      code: data.get("clientCode"), name: data.get("clientName"),
+      address: data.get("clientAddress"), phone_num: data.get("clientPhone")
+    }
+
+    axios.put(`http://localhost:4000/api/v1/clients/${this.props.clientId}`, newClient).then( (response) => {
+      console.log(response);
+      this.toggle();
+      this.props.updateClientFromState(this.props.clientId, newClient);
+    }).catch( (err) => {
+      console.log(err);
+    });
+
+  }
+
   render() {
     switch (this.props.type) {
       case 'client':
         return (
           <tr>
-            <td><input type="checkbox" /></td>
             <td>{this.props.clientCode}</td>
             <td>{this.props.clientName}</td>
             <td>{this.props.clientAddress}</td>
             <td>{this.props.clientPhone}</td>
 
-            <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
+            <td>
+              <Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button>
+            </td>
 
             <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
               <ModalHeader>Edit Client Information</ModalHeader>
 
-              <ModalBody>
-                <Form>
+              <Form onSubmit={this.updateClient}>
+                <ModalBody>
                   <FormGroup>
                     <Label>Client Code: </Label>
                     <Input type="text" name="clientCode" defaultValue={this.props.clientCode} />
@@ -53,13 +98,18 @@ class TableRow extends Component {
                     <Label>Client Phone: </Label>
                     <Input type="number" name="clientPhone" defaultValue={this.props.clientPhone} />
                   </FormGroup>
-                </Form>
-              </ModalBody>
+                </ModalBody>
 
-              <ModalFooter>
-                <Button color="primary" onClick={this.toggle}>Save Changes</Button>
-                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-              </ModalFooter>
+                <ModalFooter>
+                  <div className="test">
+                    <div className="floatLeft">
+                      <Button outline color="danger" onClick={this.deleteClient}>Delete Client</Button>
+                    </div>
+
+                    <Button color="secondary" className="floatRight" onClick={this.toggle}>Cancel</Button>
+                    <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>                  </div>
+                </ModalFooter>
+              </Form>
             </Modal>
 
           </tr>
@@ -68,7 +118,6 @@ class TableRow extends Component {
       case "employee":
         return (
           <tr>
-            <td><input type="checkbox" /></td>
             <td>{this.props.employeeCode}</td>
             <td>{this.props.employeeName}</td>
             <td>{this.props.employeePosition}</td>
@@ -139,7 +188,7 @@ class TableRow extends Component {
 
             <ModalBody>
               {/* NEED TO TAKE INTO ACCOUNT THE EDITING OF THE ACTUAL INVOICE ORDER, NOT JUST THE CLIENT CREDENTIALS */}
-              <Form>
+              <Form onSubmit={this.handleSubmit}>
                 <FormGroup>
                   <Label>Invoice Number: </Label>
                   <Input type="text" name="clientCode" defaultValue={this.props.invoiceNumber} />

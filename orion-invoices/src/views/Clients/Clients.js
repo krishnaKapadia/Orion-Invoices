@@ -19,6 +19,8 @@ class Clients extends Component {
     // Bindings
     this.toggle = this.toggle.bind(this);
     this.addClient = this.addClient.bind(this);
+    this.deleteClient = this.deleteClient.bind(this);
+    this.updateClient = this.updateClient.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.getAllClients = this.getAllClients.bind(this);
   }
@@ -53,26 +55,87 @@ class Clients extends Component {
   }
 
   // Adds to list of clients, given a FormData object
+
+  /**
+   * POSTS a new client to the API. Needs a FormData Object
+   */
   addClient(data) {
     var newClient = {
       code: data.get("clientCode"), name: data.get("clientName"),
-      address: data.get("clientAddress"), phone: data.get("clientPhone")
+      address: data.get("clientAddress"), phone_num: data.get("clientPhone")
     }
 
-    var clients = this.state.clients;
-    clients.push(newClient);
-    this.setState({ clients });
+    // Perform axios POST operation
+    axios.post("http://localhost:4000/api/v1/clients", newClient).then( (response) => {
+      console.log(response);
+      /**
+       * Adds to local state to improve performace and removing the need to reload
+         after submittion to get new database data
+       */
+      var clients = this.state.clients;
+      newClient.id = response.data.client._id;
+
+      clients.push(newClient);
+      this.setState({ clients, clientCount: this.state.clientCount + 1 });
+
+    }).catch((err) => {
+      // TODO show error to user in a notification window
+      if(err) console.log(err);
+    })
   }
 
-  handleSubmit(e) {
-      e.preventDefault();
-      // Serializes the form to give us an object containing the form's values
-      const data = new FormData(e.target);
-      // Delates addition to addClient method
-      this.addClient(data);
+  /**
+  * Removes the particular client from the state, Passed to TableRow
+  */
+  deleteClient(id) {
+    var clients = this.state.clients;
+    var filteredClients = clients.filter( (client) => {
+      return client.id !== id;
+    });
 
-      // Dismisses the modal
-      this.toggle();
+    this.setState( { clients: filteredClients, clientCount: this.state.clientCount - 1 })
+  }
+
+  /**
+  * Updates the particular client in the state, Passed to TableRow
+  */
+  updateClient(id, data) {
+    var clients = this.state.clients;
+    var client = clients.find( (c) => {
+      return c.id === id;
+    });
+
+    client = data;
+    var foundIndex = clients.findIndex(x => x.id == id);
+    clients[foundIndex] = client;
+
+    this.setState( { clients, clientCount: this.state.clientCount - 1 })
+  }
+
+  /**
+   * Handles delegation of operations on form submit
+   */
+  handleSubmit(e) {
+    e.preventDefault();
+    // Serializes the form to give us an object containing the form's values
+    // e.target.clientAddress = "Not Added";
+    const data = new FormData(e.target);
+
+    // Handles the case where address isnt inputted
+    if(data.get("clientAddress").trim() === ''){
+      data.set("clientAddress", "Not added");
+    }
+
+    // Handles the case where phone isnt inputted
+    if(data.get("clientPhone").trim() === '') {
+      data.set("clientPhone", "Not added");
+    }
+
+    // Delates addition to addClient method
+    this.addClient(data);
+
+    // Dismisses the modal
+    this.toggle();
   }
 
   render() {
@@ -99,10 +162,6 @@ class Clients extends Component {
                     <Col>
                       <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Client</Button>
                     </Col>
-
-                    <Col>
-                      <Button outline className="fullWidthButton" color="danger">Remove Clients</Button>
-                    </Col>
                   </Row>
               </CardBody>
             </Card>
@@ -119,7 +178,6 @@ class Clients extends Component {
             <Table hover responsive bordered>
               <thead>
                 <tr>
-                  <th> </th>
                   <th>Client Code</th>
                   <th>Client Name</th>
                   <th>Address</th>
@@ -131,19 +189,12 @@ class Clients extends Component {
               <tbody>
                 {
                   this.state.clients.map( (c) => (
-                    <TableRow key={c.id} type="client" clientCode={c.code} clientName={c.name}
-                    clientAddress={c.address} clientPhone={c.phone_number} />
+                    <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
+                    clientAddress={c.address} clientPhone={c.phone_number}
+                    deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
                   ))
                 }
-
-                {/* <TableRow type="client" clientCode="A100" clientName="Arrow Uniforms"
-                clientAddress="11 Jackson Street, Petone" clientPhone="0221800317" />
-
-                <TableRow type="client" clientCode="V987" clientName="Vanguard"
-                clientAddress="19 Jackson Street, Petone" clientPhone="0274500317" /> */}
-
               </tbody>
-
             </Table>
           </CardBody>
         </Card>
@@ -160,11 +211,11 @@ class Clients extends Component {
             <ModalBody>
               <FormGroup>
                 <Label>Client Code: </Label>
-                <Input type="text" name="clientCode"/>
+                <Input type="text" name="clientCode" required />
               </FormGroup>
               <FormGroup>
                 <Label>Client Name: </Label>
-                <Input type="text" name="clientName"/>
+                <Input type="text" name="clientName" required />
               </FormGroup>
               <FormGroup>
                 <Label>Client Address: </Label>
@@ -172,7 +223,7 @@ class Clients extends Component {
               </FormGroup>
               <FormGroup>
                 <Label>Client Phone: </Label>
-                <Input type="number" name="clientPhone"/>
+                <Input type="number" name="clientPhone" />
               </FormGroup>
             </ModalBody>
 

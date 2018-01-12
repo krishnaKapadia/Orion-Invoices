@@ -137,6 +137,20 @@ th h3 {
   text-align: left;
 }
 
+.floatLeft {
+  float: left;
+}
+
+.floatRight {
+  float: right;
+}
+
+.test {
+  width: 100%;
+  display: inline-block;
+  overflow: auto;
+}
+
 .bold {
   font-weight: bold;
 }
