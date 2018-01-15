@@ -3,6 +3,8 @@ import Task from './Task';
 import {
   Table, Card, CardBody, CardFooter, Button, Input
 } from 'reactstrap';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 class TaskTable extends Component {
   /*
@@ -30,31 +32,83 @@ class TaskTable extends Component {
     this.handleCheckbox = this.handleCheckbox.bind(this);
     this.setNewTask     = this.setNewTask.bind(this);
     this.saveTask       = this.saveTask.bind(this);
+    this.getAllTasks    = this.getAllTasks.bind(this);
+  }
+
+  componentWillMount() {
+    this.getAllTasks();
+  }
+
+  /*
+  * Retrieves all the users tasks from the backend through axios
+  */
+  getAllTasks() {
+    const result = axios.get("http://localhost:4000/api/v1/tasks").then( (data) => {
+      var tasks = [];
+
+      // TODO change response to return data.data.tasks
+      data.data.map( (task) => {
+        tasks.push({
+          id: task._id, desc: task.desc
+        });
+      });
+
+      this.setState({ tasks });
+    }).catch( (err) => {
+      if(err) toast.error("Could not get all Tasks, please reload the page", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    })
   }
 
   // Saves the inputted task
   saveTask() {
     var tasks = this.state.tasks;
-    const newTask = { key: this.state.taskCount, task: this.state.newTask }
-    tasks.push(newTask);
-    console.log(tasks);
+    const newTask = { desc: this.state.newTask };
 
-    // Increment the key value
-    const taskCount = this.state.taskCount + 1;
+    axios.post("http://localhost:4000/api/v1/tasks", newTask).then( (response) => {
+      /**
+       * Adds to local state to improve performace and removing the need to reload
+         after submittion to get new database data
+       */
+       newTask.id = response.data.task._id;
+       tasks.push(newTask);
+       // Increment the key value
+       const taskCount = this.state.taskCount + 1;
+       this.setState( { tasks, taskCount } );
 
-    this.setState( { tasks, taskCount } );
+       toast.success("Task saved!", {
+         position: toast.POSITION.BOTTOM_RIGHT
+       })
+    }).catch( (err) => {
+      if(err) toast.error("Could not save task, please try again",{
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+    });
 
     // toggle back the input
     this.toggleInput();
   }
 
   // Removes a spesific task, In other words marked as completed
-  removeTask(taskId, e) {
+  removeTask(taskId) {
     var tasks = this.state.tasks;
 
-    //Removal operation, filters out the spesific task
-    tasks = tasks.filter(i => i.key !== taskId );
-    this.setState( { tasks } );
+    // Removal request to backend API
+    axios.delete(`http://localhost:4000/api/v1/tasks/${taskId}`).then( (response) => {
+
+      toast.success("Task Completed", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+
+      //Removal operation from local state, filters out the spesific task
+      tasks = tasks.filter(task => task.id !== taskId );
+      this.setState( { tasks } );
+    }).catch( (err) => {
+      if(err) toast.error("Could not complete task, please try again", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    })
   }
 
   // Toggles the input new task mode
@@ -84,6 +138,7 @@ class TaskTable extends Component {
   render(){
     return(
       <div>
+        <ToastContainer />
         <Card>
           <CardBody>
             <Table hover bordered>
@@ -97,11 +152,8 @@ class TaskTable extends Component {
               <tbody>
                 {
                   this.state.tasks.length > 0 ?
-                  this.state.tasks.map( (item) => (
-                    <tr key={item.key}>
-                      <td>{item.task}</td>
-                      <td width="25%"><Button onClick={(e) => this.removeTask(item.key, e)} className="addButton fullWidthButton" color="primary"> Done </Button></td>
-                    </tr>
+                  this.state.tasks.map( (task) => (
+                    <Task key={task.id} id={task.id} desc={task.desc} removeTask={this.removeTask}/>
                   )) : <tr><td colSpan="2"><p className="centerText">No Tasks remaining</p></td></tr>
                 }
                 {

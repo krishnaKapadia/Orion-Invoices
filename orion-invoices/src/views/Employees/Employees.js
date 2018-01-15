@@ -3,6 +3,8 @@ import TableRow from "../../components/Table/TableRow";
 import { Table, Row, Col, Card, CardHeader, CardBody, Button,
 Modal, ModalHeader, ModalBody, ModalFooter,
 Form, FormGroup, Input, Label } from 'reactstrap';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 class Employees extends Component {
   constructor(props){
@@ -15,24 +17,34 @@ class Employees extends Component {
     this.toggle = this.toggle.bind(this);
     this.addEmployee = this.addEmployee.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.getAllEmployees = this.getAllEmployees.bind(this);
   }
 
   componentDidMount() {
-    const employee = {
-      code: "01", name: "Krishna Kapadia", position: "CFO", rate: "20.00",
-      phone: "0221800317", address: "55 Kanpur Road Broadmeadows"
-    }
-
-    var employees = this.state.employees;
-    employees.push(employee);
-
-    this.setState( { employees } );
-
+    this.getAllEmployees();
   }
 
-  toggle() {
-    this.setState({
-      addEmployeeModal: !this.state.addEmployeeModal
+  /*
+  * Retrieves all employees from API via axios
+  */
+  getAllEmployees() {
+    axios.get("http://localhost:4000/api/v1/employees").then( (data) => {
+      var employees = [];
+      var employeeCount = 0;
+
+      data.data.employees.map( (employee) => {
+        employees.push({
+          code: employee.code, name: `${employee.first_name} ${employee.last_name}`,
+          position: employee.position, rate: employee.rate,
+          phone: employee.phone_number, address: employee.address
+        });
+        employeeCount++;
+      })
+      this.setState({ employees, employeeCount });
+    }).catch( (err) => {
+      if(err) toast.error("Could not get all Employees", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
     })
   }
 
@@ -43,6 +55,17 @@ class Employees extends Component {
       position: data.get("employeePosition"), rate: data.get("employeeRate"),
       phone: data.get("employeePhone"), address: data.get("employeeAddress")
     }
+
+    // const employee = {
+    //   code: "01", name: "Krishna Kapadia", position: "CFO", rate: "20.00",
+    //   phone: "0221800317", address: "55 Kanpur Road Broadmeadows"
+    // }
+    //
+    // var employees = this.state.employees;
+    // employees.push(employee);
+    //
+    // this.setState( { employees } );
+
 
     var employees = this.state.employees;
     employees.push(newClient);
@@ -61,9 +84,17 @@ class Employees extends Component {
     this.toggle();
   }
 
+  toggle() {
+    this.setState({
+      addEmployeeModal: !this.state.addEmployeeModal
+    })
+  }
+
   render() {
     return (
       <div className="animated fadeIn">
+        <ToastContainer />
+
         <Row>
           <Col xs="12" md="4" lg="4">
             <Card>
@@ -103,7 +134,6 @@ class Employees extends Component {
             <Table responsive hover bordered>
               <thead>
                 <tr>
-                  <th>  </th>
                   <th>Code</th>
                   <th>Employee Name</th>
                   <th>Position</th>
@@ -136,14 +166,13 @@ class Employees extends Component {
           <Form onSubmit={this.handleSubmit}>
             <ModalBody>
                 <FormGroup>
-                  {/* REMOVED AS WILL AUTO INCREMENT ON DATABASE ADDITION */}
                   <Label>Employee Code: </Label>
                   <Input type="text" name="employeeCode" />
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>Name: </Label>
-                  <Input type="text" name="employeeName" />
+                  <Label>First name: </Label>
+                  <Input type="text" name="employeeName" required />
                 </FormGroup>
 
                 <FormGroup>

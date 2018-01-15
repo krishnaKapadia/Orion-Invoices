@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Button } from 'reactstrap';
 
 class Task extends Component {
 
@@ -19,8 +20,8 @@ class Task extends Component {
   render() {
     return (
       <tr>
-        <td>{this.props.task}</td>
-        <td><input type="checkbox" onClick={this.toggle}/></td>
+        <td>{this.props.desc}</td>
+        <td width="25%"><Button onClick={(e) => this.props.removeTask(this.props.id)} className="addButton fullWidthButton" color="primary"> Done </Button></td>
       </tr>
     );
   }

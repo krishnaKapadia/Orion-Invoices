@@ -4,6 +4,10 @@ import { Form, FormGroup, Label, Button, Input, Modal,
 } from 'reactstrap';
 import axios from 'axios';
 
+// Error notification
+import { ToastContainer, toast } from 'react-toastify';
+import { css } from 'glamor';
+
 class TableRow extends Component {
 
   constructor(props) {
@@ -32,12 +36,16 @@ class TableRow extends Component {
     axios.delete(`http://localhost:4000/api/v1/clients/${this.props.clientId}`).then( (response) => {
       console.log(response);
 
+      toast.success("Client deleted!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
       // Remove from state
       this.props.deleteClientFromState(this.props.clientId);
-
-
-      // TODO tell the user that the client was deleted via notifications
-    });
+    }).catch( (err) => {
+      if(err) toast.error("Could not delete client", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    })
   }
 
   /**
@@ -45,8 +53,17 @@ class TableRow extends Component {
   */
   updateClient(e) {
     e.preventDefault();
-
     var data = new FormData(e.target);
+
+    // Handles the case where the address is not entered
+    if(data.get("clientAddress").trim() === ''){
+      data.set("clientAddress", "Not added");
+    }
+
+    // Handles the case where phone isnt inputted
+    if(data.get("clientPhone").trim() === '') {
+      data.set("clientPhone", "Not added");
+    }
 
     var newClient = {
       code: data.get("clientCode"), name: data.get("clientName"),
@@ -55,10 +72,17 @@ class TableRow extends Component {
 
     axios.put(`http://localhost:4000/api/v1/clients/${this.props.clientId}`, newClient).then( (response) => {
       console.log(response);
+
+      toast.success("Client updated!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+
       this.toggle();
       this.props.updateClientFromState(this.props.clientId, newClient);
     }).catch( (err) => {
-      console.log(err);
+      if(err) toast.error("Could not update client", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
     });
 
   }
@@ -74,6 +98,9 @@ class TableRow extends Component {
             <td>{this.props.clientPhone}</td>
 
             <td>
+              {/* Error Toast notification */}
+              <ToastContainer />
+
               <Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button>
             </td>
 
@@ -173,45 +200,45 @@ class TableRow extends Component {
         );
 
       case "invoice":
-      return (
-        <tr>
-          <td><input type="checkbox" /></td>
-          <td>{this.props.invoiceNumber}</td>
-          <td>{this.props.clientName}</td>
-          <td>{this.props.date}</td>
-          <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Mark Paid</Button></td>
+        return (
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td>{this.props.invoiceNumber}</td>
+            <td>{this.props.clientName}</td>
+            <td>{this.props.date}</td>
+            <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Mark Paid</Button></td>
 
-          <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
+            <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
 
-          <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
-            <ModalHeader>Edit Invoice Information</ModalHeader>
+            <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
+              <ModalHeader>Edit Invoice Information</ModalHeader>
 
-            <ModalBody>
-              {/* NEED TO TAKE INTO ACCOUNT THE EDITING OF THE ACTUAL INVOICE ORDER, NOT JUST THE CLIENT CREDENTIALS */}
-              <Form onSubmit={this.handleSubmit}>
-                <FormGroup>
-                  <Label>Invoice Number: </Label>
-                  <Input type="text" name="clientCode" defaultValue={this.props.invoiceNumber} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Client Name: </Label>
-                  <Input type="text" name="clientName" defaultValue={this.props.clientName} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Date Created</Label>
-                  <Input type="text" name="clientAddress" defaultValue={this.props.date} />
-                </FormGroup>
-              </Form>
-            </ModalBody>
+              <ModalBody>
+                {/* NEED TO TAKE INTO ACCOUNT THE EDITING OF THE ACTUAL INVOICE ORDER, NOT JUST THE CLIENT CREDENTIALS */}
+                <Form onSubmit={this.handleSubmit}>
+                  <FormGroup>
+                    <Label>Invoice Number: </Label>
+                    <Input type="text" name="clientCode" defaultValue={this.props.invoiceNumber} />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Client Name: </Label>
+                    <Input type="text" name="clientName" defaultValue={this.props.clientName} />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Date Created</Label>
+                    <Input type="text" name="clientAddress" defaultValue={this.props.date} />
+                  </FormGroup>
+                </Form>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button color="primary" onClick={this.toggle}>Save Changes</Button>
-              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-            </ModalFooter>
-          </Modal>
+              <ModalFooter>
+                <Button color="primary" onClick={this.toggle}>Save Changes</Button>
+                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
 
-        </tr>
-      );
+          </tr>
+        );
     }
 
   }

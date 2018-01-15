@@ -7,6 +7,11 @@ import {
   Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label
 } from 'reactstrap';
 
+// Error notification
+import { ToastContainer, toast } from 'react-toastify';
+import { css } from 'glamor';
+
+
 class Clients extends Component {
 
   constructor(props) {
@@ -36,17 +41,37 @@ class Clients extends Component {
     const result = axios.get("http://localhost:4000/api/v1/clients").then( (data) => {
       var clients = [];
       var clientCount = 0;
-
       data.data.clients.map( (client) => {
         clients.push({
           id: client._id, code: client.code, name: client.name,
-          address: client.address, phone_number: client.phone_num
+          address: client.address, phone_num: client.phone_num
         });
         clientCount++;
       });
 
       this.setState({ clients, clientCount });
-    });
+    }).catch( (err) => {
+      if(err) toast.error("Could not get all Clients", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    })
+
+    // const Msg = ({ closeToast }) => (
+    //   <div>
+    //     <h3>Could not add client!</h3>
+    //     <Button onClick={closeToast}>Retry</Button>
+    //   </div>
+    // )
+    // toast("Could not get clients!",{
+    //   position: toast.POSITION.BOTTOM_RIGHT,
+    //   className: css({
+    //     // background: "#2c3e50",
+    //     height: "80px",
+    //     'font-size': "1rem",
+    //     // color: "white"
+    //   }),
+    //   bodyClassName: "grow-font-size"
+    // });
   }
 
   // Toggles Add client modal
@@ -67,7 +92,6 @@ class Clients extends Component {
 
     // Perform axios POST operation
     axios.post("http://localhost:4000/api/v1/clients", newClient).then( (response) => {
-      console.log(response);
       /**
        * Adds to local state to improve performace and removing the need to reload
          after submittion to get new database data
@@ -78,9 +102,16 @@ class Clients extends Component {
       clients.push(newClient);
       this.setState({ clients, clientCount: this.state.clientCount + 1 });
 
+      toast.success("Client added!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
     }).catch((err) => {
       // TODO show error to user in a notification window
-      if(err) console.log(err);
+      if(err) {
+        toast.error("Client could not be added!", {
+          position: toast.POSITION.BOTTOM_RIGHT
+        });
+      }
     })
   }
 
@@ -105,11 +136,12 @@ class Clients extends Component {
       return c.id === id;
     });
 
+    data.id = id;
     client = data;
+
     var foundIndex = clients.findIndex(x => x.id == id);
     clients[foundIndex] = client;
-
-    this.setState( { clients, clientCount: this.state.clientCount - 1 })
+    this.setState( { clients })
   }
 
   /**
@@ -141,6 +173,9 @@ class Clients extends Component {
   render() {
     return (
       <div className="animated fadeIn">
+        {/* Error Toast notification */}
+        <ToastContainer />
+
         <Row>
           <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
 
@@ -190,7 +225,7 @@ class Clients extends Component {
                 {
                   this.state.clients.map( (c) => (
                     <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
-                    clientAddress={c.address} clientPhone={c.phone_number}
+                    clientAddress={c.address} clientPhone={c.phone_num}
                     deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
                   ))
                 }
