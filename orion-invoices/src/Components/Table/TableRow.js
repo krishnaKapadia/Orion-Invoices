@@ -20,6 +20,8 @@ class TableRow extends Component {
     this.toggle = this.toggle.bind(this);
     this.deleteClient = this.deleteClient.bind(this);
     this.updateClient = this.updateClient.bind(this);
+    this.deleteEmployee = this.deleteEmployee.bind(this);
+    this.updateEmployee = this.updateEmployee.bind(this);
   }
 
   toggle() {
@@ -87,6 +89,61 @@ class TableRow extends Component {
 
   }
 
+  /**
+  * Deletes the client thats stored by this TableRow
+  */
+  deleteEmployee(e) {
+    axios.delete(`http://localhost:4000/api/v1/employees/${this.props.employeeId}`).then( (response) => {
+
+      toast.success("Employee deleted!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+      // Remove from state
+      this.props.deleteEmployeeFromState(this.props.employeeId);
+    }).catch( (err) => {
+      if(err) toast.error("Could not delete employee! Please try again", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    });
+  }
+
+  /*
+  * Updates the employee thats stored by this TableRow
+  */
+  updateEmployee(e) {
+    e.preventDefault();
+    console.log(e);
+    var data = new FormData(e.target);
+
+    // Handles cases of empty fields being submitted
+    if(data.get("employeeCode").trim() === '') data.set("employeeCode", "N/A");
+    if(data.get("employeeRate").trim() === '') data.set("employeeRate", "N/A");
+    if(data.get("employeeAddress").trim() === '') data.set("employeeAddress", "N/A");
+
+    console.log(this.props.employeeId);
+    var newEmployee = {
+      code: data.get("employeeCode"), name: data.get("employeeName"),
+      position: data.get("employeePosition"), rate: data.get("employeeRate"),
+      phone_number: data.get("employeePhone"), address: data.get("employeeAddress")
+    }
+    
+    console.log(newEmployee);
+    // Perform axios POST operation to API
+    axios.put(`http://localhost:4000/api/v1/employees/${this.props.employeeId}`, newEmployee).then( (response) => {
+
+      toast.success("Employee updated!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+
+      this.toggle();
+      this.props.updateEmployeeFromState(this.props.employeeId, newEmployee);
+    }).catch( (err) => {
+      if(err) toast.error("Could not update employee", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
+    });
+  }
+
   render() {
     switch (this.props.type) {
       case 'client':
@@ -151,22 +208,21 @@ class TableRow extends Component {
             <td>${this.props.employeeRate}</td>
             <td>{this.props.employeePhoneNumber}</td>
             <td>{this.props.employeeAddress}</td>
-
             <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
 
             <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
               <ModalHeader>Edit Employee Information</ModalHeader>
 
-              <ModalBody>
-                <Form>
+              <Form onSubmit={this.updateEmployee}>
+                <ModalBody>
                   <FormGroup>
                     <Label>Employee Code: </Label>
-                    <Input type="text" name="clientCode" defaultValue={this.props.employeeCode} />
+                    <Input type="text" name="employeeCode" defaultValue={this.props.employeeCode} />
                   </FormGroup>
 
                   <FormGroup>
                     <Label>Name: </Label>
-                    <Input type="text" name="clientName" defaultValue={this.props.employeeName} />
+                    <Input type="text" name="employeeName" defaultValue={this.props.employeeName} />
                   </FormGroup>
 
                   <FormGroup>
@@ -176,25 +232,31 @@ class TableRow extends Component {
 
                   <FormGroup>
                     <Label>Hourly Rate: </Label>
-                    <Input type="number" name="clientPhone" defaultValue={this.props.employeeRate} />
+                    <Input type="number" name="employeeRate" defaultValue={this.props.employeeRate} />
                   </FormGroup>
 
                   <FormGroup>
                     <Label>Phone Number: </Label>
-                    <Input type="number" name="clientPhone" defaultValue={this.props.employeePhoneNumber} />
+                    <Input type="number" name="employeePhone" defaultValue={this.props.employeePhoneNumber} />
                   </FormGroup>
 
                   <FormGroup>
                     <Label>Address: </Label>
-                    <Input type="text" name="clientAddress" defaultValue={this.props.employeeAddress} />
+                    <Input type="text" name="employeeAddress" defaultValue={this.props.employeeAddress} />
                   </FormGroup>
-                </Form>
               </ModalBody>
 
               <ModalFooter>
-                <Button color="primary" onClick={this.toggle}>Save Changes</Button>
-                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                <div className="test">
+                  <div className="floatLeft">
+                    <Button outline color="danger" onClick={this.deleteEmployee}>Delete Employee</Button>
+                  </div>
+
+                  <Button color="secondary" className="floatRight" onClick={this.toggle}>Cancel</Button>
+                  <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+                </div>
               </ModalFooter>
+            </Form>
             </Modal>
           </tr>
         );

@@ -17,6 +17,8 @@ class Employees extends Component {
     this.toggle = this.toggle.bind(this);
     this.addEmployee = this.addEmployee.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.deleteEmployee = this.deleteEmployee.bind(this);
+    this.updateEmployee = this.updateEmployee.bind(this);
     this.getAllEmployees = this.getAllEmployees.bind(this);
   }
 
@@ -34,12 +36,14 @@ class Employees extends Component {
 
       data.data.employees.map( (employee) => {
         employees.push({
-          code: employee.code, name: `${employee.first_name} ${employee.last_name}`,
+          id: employee._id,
+          code: employee.code, name: employee.name,
           position: employee.position, rate: employee.rate,
-          phone: employee.phone_number, address: employee.address
+          phone_number: employee.phone_number, address: employee.address
         });
         employeeCount++;
-      })
+      });
+
       this.setState({ employees, employeeCount });
     }).catch( (err) => {
       if(err) toast.error("Could not get all Employees", {
@@ -48,42 +52,93 @@ class Employees extends Component {
     })
   }
 
-  // Adds the employee to the state, TODO: ADD TO SERVER
+  /**
+  * Add employee to the API and to local state
+  */
   addEmployee(data) {
-    var newClient = {
+    var newEmployee = {
       code: data.get("employeeCode"), name: data.get("employeeName"),
       position: data.get("employeePosition"), rate: data.get("employeeRate"),
-      phone: data.get("employeePhone"), address: data.get("employeeAddress")
+      phone_number: data.get("employeePhone"), address: data.get("employeeAddress")
     }
 
-    // const employee = {
-    //   code: "01", name: "Krishna Kapadia", position: "CFO", rate: "20.00",
-    //   phone: "0221800317", address: "55 Kanpur Road Broadmeadows"
-    // }
-    //
-    // var employees = this.state.employees;
-    // employees.push(employee);
-    //
-    // this.setState( { employees } );
+    // Perform axios POST operation to API
+    axios.post("http://localhost:4000/api/v1/employees", newEmployee).then( (response) => {
+      /**
+       * Adds to local state to improve performace and removing the need to reload
+         after submittion to get new database data
+      */
+      var employees = this.state.employees;
+      newEmployee.id = response.data.employee._id;
 
+      employees.push(newEmployee);
+      this.setState({ employees, employeeCount: this.state.employeeCount + 1 });
 
-    var employees = this.state.employees;
-    employees.push(newClient);
+      toast.success("Employee added!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+    }).catch( (err) => {
+      if(err) {
+        toast.error("Employee could not be added! Please try again" + err, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        });
+      }
+    });
 
-    this.setState( { employees } );
   }
 
+  /**
+  * Updates the particular employee in the state, Passed to TableRow
+  */
+  updateEmployee(id, data) {
+    var employees = this.state.employees;
+    var employee = employees.find( (e) => {
+      return e.id === id;
+    });
+
+    data.id = id;
+    employee = data;
+
+    var foundIndex = employees.findIndex(x => x.id ==id);
+    employees[foundIndex] = employee;
+    this.setState( { employee });
+  }
+
+  /**
+  * Removes the particular employee from the state, called from TableRow
+  */
+  deleteEmployee(id) {
+    var employees = this.state.employees;
+    var filteredEmployees = employees.filter( (employee) => {
+      return employee.id !== id;
+    });
+
+    this.setState( { employees: filteredEmployees, employeeCount: this.state.employeeCount - 1 });
+  }
+
+  /*
+  * Handles the submittion of the modal and delegates to add employee
+  */
   handleSubmit(e) {
     e.preventDefault();
 
     // Creates an object containing form data and delegates addition to addEmployee function
     const data = new FormData(e.target);
+
+    // Handles cases of empty fields being submitted
+    if(data.get("employeeCode").trim() === '') data.set("employeeCode", "N/A");
+    if(data.get("employeeRate").trim() === '') data.set("employeeRate", "N/A");
+    if(data.get("employeeAddress").trim() === '') data.set("employeeAddress", "N/A");
+
     this.addEmployee(data);
 
     // Dismisses the modal
     this.toggle();
   }
 
+  /*
+  * Shows/Hides the add employee modal
+  */
   toggle() {
     this.setState({
       addEmployeeModal: !this.state.addEmployeeModal
@@ -115,9 +170,6 @@ class Employees extends Component {
                   <Col>
                     <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Employee</Button>
                   </Col>
-                  <Col>
-                    <Button className="fullWidthButton" outline color="danger">Remove Employee</Button>
-                  </Col>
                 </Row>
               </CardBody>
             </Card>
@@ -147,9 +199,10 @@ class Employees extends Component {
               <tbody>
                 {
                   this.state.employees.map( (e) => (
-                    <TableRow key={e.code} type="employee" employeeCode={e.code} employeeName={e.name}
-                    employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone}
-                    employeeAddress={e.address}
+                    <TableRow key={e.id} type="employee" employeeId={e.id} employeeCode={e.code} employeeName={e.name}
+                    employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone_number}
+                    employeeAddress={e.address} deleteEmployeeFromState={this.deleteEmployee}
+                    updateEmployeeFromState={this.updateEmployee}
                     />
                   ))
                 }
@@ -171,23 +224,23 @@ class Employees extends Component {
                 </FormGroup>
 
                 <FormGroup>
-                  <Label>First name: </Label>
+                  <Label>Full name: </Label>
                   <Input type="text" name="employeeName" required />
                 </FormGroup>
 
                 <FormGroup>
                   <Label>Position: </Label>
-                  <Input type="text" name="employeePosition" />
+                  <Input type="text" name="employeePosition" required />
                 </FormGroup>
 
                 <FormGroup>
                   <Label>Hourly Rate: </Label>
-                  <Input type="number" name="employeeRate" />
+                  <Input type="number" name="employeeRate" step="0.01"/>
                 </FormGroup>
 
                 <FormGroup>
                   <Label>Phone Number: </Label>
-                  <Input type="number" name="employeePhone" />
+                  <Input type="number" name="employeePhone" required />
                 </FormGroup>
 
                 <FormGroup>
