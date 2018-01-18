@@ -154,7 +154,7 @@ class Employees extends Component {
           <Col xs="12" md="4" lg="4">
             <Card>
               <CardBody>
-                <h3><i className="icon-people blue paddingRight" /> Employees: {this.state.totalEmployees}</h3>
+                <h3><i className="icon-people blue paddingRight" /> Employees: {this.state.employeeCount}</h3>
               </CardBody>
             </Card>
           </Col>
