@@ -282,7 +282,7 @@ class TableRow extends Component {
             <td>{data.inv_number}</td>
             <td>{data.client_name}</td>
             <td>{data.date}</td>
-            { data.paid == false && <td><Button className="fullWidthButton" color="info" onClick={this.togglePaid}>Mark Paid</Button></td> }
+            { data.paid == false && <td><Button outline className="fullWidthButton" color="info" onClick={this.togglePaid}>Mark Paid</Button></td> }
             { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary">Paid</Button></td> }
             <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
 
