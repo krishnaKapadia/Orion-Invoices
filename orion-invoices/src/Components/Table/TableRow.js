@@ -18,6 +18,7 @@ class TableRow extends Component {
     }
 
     this.toggle = this.toggle.bind(this);
+    this.togglePaid = this.togglePaid.bind(this);
     this.deleteClient = this.deleteClient.bind(this);
     this.updateClient = this.updateClient.bind(this);
     this.deleteEmployee = this.deleteEmployee.bind(this);
@@ -126,7 +127,7 @@ class TableRow extends Component {
       position: data.get("employeePosition"), rate: data.get("employeeRate"),
       phone_number: data.get("employeePhone"), address: data.get("employeeAddress")
     }
-    
+
     console.log(newEmployee);
     // Perform axios POST operation to API
     axios.put(`http://localhost:4000/api/v1/employees/${this.props.employeeId}`, newEmployee).then( (response) => {
@@ -142,6 +143,20 @@ class TableRow extends Component {
         position: toast.POSITION.BOTTOM_RIGHT
       })
     });
+  }
+
+  /**
+  * Sets a particular invoice to paid status
+  */
+  togglePaid(e) {
+    const data = this.props.data;
+    console.log(data.paid);
+    data.paid = true;
+    axios.put(`http://localhost:4000/api/v1/invoices/${data._id}`, data).then((response) => {
+      console.log(response);
+    }).catch((err) => {
+      if(err) console.log(err);
+    })
   }
 
   render() {
@@ -195,7 +210,6 @@ class TableRow extends Component {
                 </ModalFooter>
               </Form>
             </Modal>
-
           </tr>
         );
 
@@ -262,14 +276,14 @@ class TableRow extends Component {
         );
 
       case "invoice":
+        const data = this.props.data;
         return (
           <tr>
-            <td><input type="checkbox" /></td>
-            <td>{this.props.invoiceNumber}</td>
-            <td>{this.props.clientName}</td>
-            <td>{this.props.date}</td>
-            <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Mark Paid</Button></td>
-
+            <td>{data.inv_number}</td>
+            <td>{data.client_name}</td>
+            <td>{data.date}</td>
+            { data.paid == false && <td><Button className="fullWidthButton" color="info" onClick={this.togglePaid}>Mark Paid</Button></td> }
+            { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary">Paid</Button></td> }
             <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
 
             <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
@@ -280,15 +294,15 @@ class TableRow extends Component {
                 <Form onSubmit={this.handleSubmit}>
                   <FormGroup>
                     <Label>Invoice Number: </Label>
-                    <Input type="text" name="clientCode" defaultValue={this.props.invoiceNumber} />
+                    <Input type="text" name="clientCode" defaultValue={data.inv_number} />
                   </FormGroup>
                   <FormGroup>
                     <Label>Client Name: </Label>
-                    <Input type="text" name="clientName" defaultValue={this.props.clientName} />
+                    <Input type="text" name="clientName" defaultValue={data.client_name} />
                   </FormGroup>
                   <FormGroup>
                     <Label>Date Created</Label>
-                    <Input type="text" name="clientAddress" defaultValue={this.props.date} />
+                    <Input type="text" name="clientAddress" defaultValue={data.date} />
                   </FormGroup>
                 </Form>
               </ModalBody>
@@ -298,7 +312,6 @@ class TableRow extends Component {
                 <Button color="secondary" onClick={this.toggle}>Cancel</Button>
               </ModalFooter>
             </Modal>
-
           </tr>
         );
     }

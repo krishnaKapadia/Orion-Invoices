@@ -5,6 +5,7 @@ import {
   Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import axios from 'axios';
 
 class Invoices extends Component {
 
@@ -12,8 +13,44 @@ class Invoices extends Component {
     super(props);
 
     this.state = {
-      invoiceCount: 100,
+      invoices: [], invoiceCount: 0,
     }
+
+    // this.addInvoice = this.addInvoice.bind(this);
+    this.getAllInvoices = this.getAllInvoices.bind(this);
+  }
+
+  componentDidMount() {
+    this.getAllInvoices();
+  }
+
+  /**
+  * Retrieves all the invoices accociated with the business associated with the logged in user
+  */
+  getAllInvoices() {
+    axios.get("http://localhost:4000/api/v1/invoices").then( (data) => {
+      var invoices = [];
+      var invoiceCount = 0;
+
+      data.data.invoices.map( (invoice) => {
+        var date = new Date(invoice.date);
+        date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        invoice.date = date;
+
+        invoices.push(
+          invoice
+          // id: invoice._id, inv_number: invoice.inv_number,
+          // client_code: invoice.client_code, client_name: invoice.client_name,
+          // client_address: invoice.client_address, subtotal: invoice.subtotal,
+          // tax_rate: invoice.tax_rate, total: invoice.total, items: invoice.items
+        );
+        invoiceCount++;
+      });
+
+      this.setState({ invoices, invoiceCount });
+    }).catch( (err) => {
+      if(err) console.log(err);
+    });
   }
 
   render() {
@@ -62,7 +99,6 @@ class Invoices extends Component {
             <Table hover responsive bordered>
               <thead>
                 <tr>
-                  <th> </th>
                   <th>Invoice Number</th>
                   <th>Client Name</th>
                   <th>Date</th>
@@ -72,12 +108,13 @@ class Invoices extends Component {
               </thead>
 
               <tbody>
-                <TableRow type="invoice" invoiceNumber="A100" clientName="Arrow Uniforms"
-                date="20/12/2017" paid="1" />
-
-                <TableRow type="invoice" invoiceNumber="V987" clientName="Vanguard"
-                date="19/12/2020" paid="0" />
-
+                {
+                  this.state.invoices.map( (e) => {
+                    return(
+                      <TableRow key={e._id} type="invoice" data={e} togglePaid={this.togglePaid}/>
+                    )
+                  })
+                }
               </tbody>
 
             </Table>
