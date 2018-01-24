@@ -154,6 +154,7 @@ class TableRow extends Component {
     data.paid = true;
     axios.put(`http://localhost:4000/api/v1/invoices/${data._id}`, data).then((response) => {
       console.log(response);
+      this.props.history.push('/invoices');
     }).catch((err) => {
       if(err) console.log(err);
     })
@@ -282,9 +283,13 @@ class TableRow extends Component {
             <td>{data.inv_number}</td>
             <td>{data.client_name}</td>
             <td>{data.date}</td>
+            {/* Paid button */}
             { data.paid == false && <td><Button outline className="fullWidthButton" color="info" onClick={this.togglePaid}>Mark Paid</Button></td> }
             { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary">Paid</Button></td> }
-            <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td>
+
+            {/* Edit button */}
+            { data.paid == false && <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td> }
+            { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary" onClick={this.toggle}>Edit</Button></td> }
 
             <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
               <ModalHeader>Edit Invoice Information</ModalHeader>

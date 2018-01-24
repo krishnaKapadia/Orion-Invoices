@@ -214,14 +214,21 @@ class NewInvoice extends Component {
       total: data.total, items
     }
 
+    var props = this.props;
+    var success = false;
+
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
       console.log(response);
+      // Redirects react router to display the invoices page, TODO force a re-get of all the invoices as there is a new one that has been added
+      success = true;
     }).catch( (err) => {
-      if(err) console.log(err);
-    })
-
-    // Redirects react router to display the invoices page, TODO force a re-get of all the invoices as there is a new one that has been added
+      if(err) {
+        console.log(err);
+        success = false;
+      }
+    });
+    console.log(this.props.history);
     this.props.history.push('/invoices');
   }
 
@@ -413,4 +420,4 @@ class NewInvoice extends Component {
 
 }
 
-export default NewInvoice;
+export default withRouter(NewInvoice);

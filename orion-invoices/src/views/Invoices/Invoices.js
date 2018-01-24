@@ -21,6 +21,7 @@ class Invoices extends Component {
   }
 
   componentDidMount() {
+    // this.forceUpdate();
     this.getAllInvoices();
   }
 
@@ -101,7 +102,7 @@ class Invoices extends Component {
                 <tr>
                   <th>Invoice Number</th>
                   <th>Client Name</th>
-                  <th>Date</th>
+                  <th>Date Created</th>
                   <th>Paid</th>
                   <th>Options</th>
                 </tr>
