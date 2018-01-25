@@ -3,6 +3,7 @@ import { Form, FormGroup, Label, Button, Input, Modal,
   ModalHeader, ModalBody, ModalFooter, Row, Col
 } from 'reactstrap';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 // Error notification
 import { ToastContainer, toast } from 'react-toastify';
@@ -288,8 +289,25 @@ class TableRow extends Component {
             { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary">Paid</Button></td> }
 
             {/* Edit button */}
-            { data.paid == false && <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td> }
-            { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary" onClick={this.toggle}>Edit</Button></td> }
+            {/* { data.paid == false && <td><Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button></td> } */}
+            {/* { data.paid == true && <td><Button outline className="fullWidthButton" color="secondary" onClick={this.toggle}>Edit</Button></td> } */}
+
+            {/* View Button */}
+            <td>
+              <Link
+                to={{
+                  pathname: "/invoices/createInvoice",
+                  state: {
+                    invoice: data
+                  }
+                }
+              }>
+
+                <Button outline className="fullWidthButton" color="info">View</Button>
+              </Link>
+            </td>
+
+
 
             <Modal className="modal-primary" isOpen={this.state.editModal} toggle={this.toggle}>
               <ModalHeader>Edit Invoice Information</ModalHeader>

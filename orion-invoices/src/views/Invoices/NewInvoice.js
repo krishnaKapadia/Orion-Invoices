@@ -233,189 +233,373 @@ class NewInvoice extends Component {
   }
 
   render() {
+    if(this.props.location.state !== null) {
+      console.log(this.props.location.state);
+      const data = this.props.location.state.invoice;
+      const items = data.items;
+      // console.log(data);
 
-    return (
-      <Row>
-        <Col xs="12" md="12" lg="9">
-          <Card className="animated fadeIn invoiceCard">
-            <CardHeader>
-              <h3>Invoice</h3>
-            </CardHeader>
+      return (
+        <Row>
+          <Col xs="12" md="12" lg="9">
+            <Card className="animated fadeIn invoiceCard">
+              <CardHeader>
+                <h3>Invoice</h3>
+              </CardHeader>
 
-            <CardBody>
-              <Form id="invoiceForm" onSubmit={this.submitInvoiceToAPI}>
-                <div className="invoice-container">
-                  {/* Invoice */}
-                  <Row className="invoiceHeader">
-                    <Col md="8">
-                      <img src={require('../../Assets/logo.png')} alt="Amba Logo" />
-                    </Col>
+              <CardBody>
+                <Form id="invoiceForm">
+                  <div className="invoice-container">
+                    {/* Invoice */}
+                    <Row className="invoiceHeader">
+                      <Col md="8">
+                        <img src={require('../../Assets/logo.png')} alt="Amba Logo" />
+                      </Col>
 
-                    <Col className="rightBox" md="4">
-                      <h5 className="bold">Tax Invoice</h5>
-                      <p>Invoice #: {this.state.invoiceNumber} <br />
-                        Created: {moment().format('LL')} <br />
-                        Due: {moment().add(15, 'days').format('LL')}</p>
-                    </Col>
-                  </Row>
+                      <Col className="rightBox" md="4">
+                        <h5 className="bold">Tax Invoice</h5>
+                        <p>Invoice #: {data.invoiceNumber} <br />
+                          Created: {data.date} <br />
+                          Due: {moment(data.date).add(15, 'days').format('LL')}</p>
+                      </Col>
+                    </Row>
 
-                  <Row className="invoiceClientDetails">
-                    {/* Client Details */}
-                    <Col md="4">
-                      <h5 className="bold">To:</h5>
-                      <Input required className="invoiceInput" onChange={this.setClientName} type="text" id="clientName" name="clientName" placeholder="Enter the clients name" />
-                      <Input className="invoiceInput" onChange={this.setclientAddress} type="textarea" id="clientAddress" name="clientAddress" placeholder="Enter the clients address" />
-                      {/* <Input className="invoiceInput" type="text" id="clientSuburb" placeholder="Enter the clients suburb" /> */}
-                      {/* <Input className="invoiceInput" type="text" id="clientCountry" placeholder="Enter the clients Country" /> */}
-                    </Col>
+                    <Row className="invoiceClientDetails">
+                      {/* Client Details */}
+                      <Col md="4">
+                        <h5 className="bold">To:</h5>
+                        <h5>{data.client_name}</h5>
+                        {/* <Input className="invoiceInput" value={data.client_name} type="text" id="clientName" name="clientName" placeholder="Enter the clients name" /> */}
+                        {data.client_address && <h5>{data.client_address}</h5> }
+                      </Col>
 
-                    <Col md="4">
-                      {/* Spacing purposes only */}
-                    </Col>
+                      <Col md="4">
+                        {/* Spacing purposes only */}
+                      </Col>
 
-                    {/* Client details in terms of our payment numbers */}
-                    <Col className="rightBox" md="4">
-                      <h5 className="bold">Details:</h5>
-                      <Input required onChange={this.setClientCode} className="invoiceInput" type="text" id="clientCode" name="clientCode" placeholder="Client Number"/>
-                      <b>GST Num: 85-105-434</b>
-                      <p>Our account for direct crediting<br />
-                      <b>06-0507-0052045-00</b></p>
-                    </Col>
-                  </Row>
+                      {/* Client details in terms of our payment numbers */}
+                      <Col className="rightBox" md="4">
+                        <h5 className="bold">Details:</h5>
+                        {/* <Input required value={data.client_code} className="invoiceInput" type="text" id="clientCode" name="clientCode"/> */}
+                        <p>Client Code: <b>{data.client_code}</b></p>
+                        <b>GST Num: 85-105-434</b>
+                        <p>Our account for direct crediting<br />
+                        <b>06-0507-0052045-00</b></p>
+                      </Col>
+                    </Row>
 
-                  <Row className="invoiceTableRow">
-                    <Col>
-                      {/* Table */}
-                      <Table className="invoiceTable" size="md">
-                        <thead>
-                          <tr>
-                            <th>Order #</th>
-                            <th width="30%">Description</th>
-                            <th width="15%">Quantity</th>
-                            <th width="15%">Unit Price</th>
-                            <th width="20%">Sub total</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-
-                          {this.state.items.map( (i) => (
-                            <tr key={i.key}>
-                              <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="code" placeholder="Order Number" /></td>
-                              <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
-                              <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>
-                              <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemUnitPrice(i.key, e)} type="number" step="0.01" name="price" placeholder="Unit Price"/></td>
-                              <td width="5%">{ i.totalPrice !== "" ? <p>{formatToPrice(i.totalPrice)}</p> : <p>$0.00</p> }</td>
-                              {/* <td><Button className="glyphicon-remove" color="danger" onClick={this.removeRow}>Remove Item</Button></td> */}
+                    <Row className="invoiceTableRow">
+                      <Col>
+                        {/* Table */}
+                        <Table className="invoiceTable" size="md">
+                          <thead>
+                            <tr>
+                              <th>Order #</th>
+                              <th width="30%">Description</th>
+                              <th width="15%">Quantity</th>
+                              <th width="15%">Unit Price</th>
+                              <th width="20%">Sub total</th>
                             </tr>
-                          ))}
+                          </thead>
+                          <tbody>
 
-                          <tr>
-                            <td><Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button></td>
-                            <td><Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button></td>
-                            <td> {/* Spacer */} </td>
+                            {items.map( (i) => (
+                              <tr key={i.id}>
+                                <td><p key={i.id}>{i.code}</p></td>
+                                <td><p key={i.id}>{i.desc}</p></td>
+                                <td><p key={i.id}>{i.quantity}</p></td>
+                                <td><p key={i.id}>{formatToPrice(i.price)}</p></td>
+                                <td><p key={i.id}>{formatToPrice(parseFloat(i.price) * parseFloat(i.quantity))}</p></td>
+                              </tr>
+                            ))}
 
-                            <td colSpan="2">
-                              <Table bordered>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      <Row className="totals">
-                                        <Col md="6">Subtotal:</Col>
-                                        <Col md="6">{formatToPrice(this.state.subtotal)}</Col>
-                                      </Row>
-                                    </td>
-                                  </tr>
+                            <tr>
+                              <td><Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button></td>
+                              <td><Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button></td>
+                              <td> {/* Spacer */} </td>
 
-                                  <tr>
-                                    <td>
-                                      <Row className="totals">
-                                        <Col md="6">Tax(15%):</Col>
-                                        <Col md="6">{formatToPrice(this.state.tax)}</Col>
-                                      </Row>
-                                    </td>
-                                  </tr>
+                              <td colSpan="2">
+                                <Table bordered>
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Subtotal:</Col>
+                                          <Col md="6">{formatToPrice(data.subtotal)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
 
-                                  <tr>
-                                    <td>
-                                      <Row className="totals">
-                                        <Col md="6">Total:</Col>
-                                        <Col md="6">{formatToPrice(this.state.total)}</Col>
-                                      </Row>
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </Table>
-                            </td>
-                          </tr>
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Tax(15%):</Col>
+                                          <Col md="6">{formatToPrice(data.tax_rate)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
 
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Total:</Col>
+                                          <Col md="6">{formatToPrice(data.total)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </td>
+                            </tr>
 
-                <div className="invoiceFooter">
-                  <Row>
-                    {/* Our Contact Details */}
-                    <Col className="leftBox" md="4">
-                      <h4>Contact Us:</h4>
-                        <p>Phone: 04-939-1711 <br />
-                        Fax: 04-939-1712 <br />
-                        Email: amba@xtra.co.nz</p>
-                    </Col>
+                          </tbody>
+                        </Table>
+                      </Col>
+                    </Row>
 
-                    <Col md="3">
-                      {/* Spacing purposes only */}
-                    </Col>
+                  <div className="invoiceFooter">
+                    <Row>
+                      {/* Our Contact Details */}
+                      <Col className="leftBox" md="4">
+                        <h4>Contact Us:</h4>
+                          <p>Phone: 04-939-1711 <br />
+                          Fax: 04-939-1712 <br />
+                          Email: amba@xtra.co.nz</p>
+                      </Col>
 
-                    <Col className="rightBox" md="5">
-                      <h4>Address:</h4>
-                      <p>19-21 Jackson Street <br />
-                      Petone, Wellington <br />
-                      6035</p>
-                    </Col>
-                  </Row>
+                      <Col md="3">
+                        {/* Spacing purposes only */}
+                      </Col>
 
-                  <Row>
-                    <Col>
-                      <div className="footer">
-                        <h5>All totals are final and non-negotiable. Payments must be made by the specified due date
-                        with no exceptions. Unpaid accounts will incur late payment fees & collection costs</h5>
-                      </div>
+                      <Col className="rightBox" md="5">
+                        <h4>Address:</h4>
+                        <p>19-21 Jackson Street <br />
+                        Petone, Wellington <br />
+                        6035</p>
+                      </Col>
+                    </Row>
 
-                    </Col>
-                  </Row>
+                    <Row>
+                      <Col>
+                        <div className="footer">
+                          <h5>All totals are final and non-negotiable. Payments must be made by the specified due date
+                          with no exceptions. Unpaid accounts will incur late payment fees & collection costs</h5>
+                        </div>
 
-                </div>
+                      </Col>
+                    </Row>
+
+                  </div>
 
 
-                </div>
-              </Form>
-            </CardBody>
-          </Card>
-        </Col>
+                  </div>
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
 
-        <Col xs="12" md="12" lg="3">
-          <Card>
-            <CardHeader>Options</CardHeader>
-            <CardBody>
-              <Row>
-                <Col>
-                  {/* <NavLink to="/invoices"> */}
-                    <Button outline type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
-                  {/* </NavLink> */}
-                </Col>
+          <Col xs="12" md="12" lg="3">
+            <Card>
+              <CardHeader>Options</CardHeader>
+              <CardBody>
+                <Row>
+                  <Col>
+                    <NavLink to="/invoices">
+                      <Button outline type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Back</Button>
+                    </NavLink>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      );
 
-                <Col>
-                  <NavLink to="/invoices">
-                    <Button outline className="fullWidthButton" color="danger">Cancel</Button>
-                  </NavLink>
-                </Col>
-              </Row>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
-    );
+    } else {
+      return (
+        <Row>
+          <Col xs="12" md="12" lg="9">
+            <Card className="animated fadeIn invoiceCard">
+              <CardHeader>
+                <h3>Invoice</h3>
+              </CardHeader>
+
+              <CardBody>
+                <Form id="invoiceForm" onSubmit={this.submitInvoiceToAPI}>
+                  <div className="invoice-container">
+                    {/* Invoice */}
+                    <Row className="invoiceHeader">
+                      <Col md="8">
+                        <img src={require('../../Assets/logo.png')} alt="Amba Logo" />
+                      </Col>
+
+                      <Col className="rightBox" md="4">
+                        <h5 className="bold">Tax Invoice</h5>
+                        <p>Invoice #: {this.state.invoiceNumber} <br />
+                          Created: {moment().format('LL')} <br />
+                          Due: {moment().add(15, 'days').format('LL')}</p>
+                      </Col>
+                    </Row>
+
+                    <Row className="invoiceClientDetails">
+                      {/* Client Details */}
+                      <Col md="4">
+                        <h5 className="bold">To:</h5>
+                        <Input required className="invoiceInput" onChange={this.setClientName} type="text" id="clientName" name="clientName" placeholder="Enter the clients name" />
+                        <Input className="invoiceInput" onChange={this.setclientAddress} type="textarea" id="clientAddress" name="clientAddress" placeholder="Enter the clients address" />
+                        {/* <Input className="invoiceInput" type="text" id="clientSuburb" placeholder="Enter the clients suburb" /> */}
+                        {/* <Input className="invoiceInput" type="text" id="clientCountry" placeholder="Enter the clients Country" /> */}
+                      </Col>
+
+                      <Col md="4">
+                        {/* Spacing purposes only */}
+                      </Col>
+
+                      {/* Client details in terms of our payment numbers */}
+                      <Col className="rightBox" md="4">
+                        <h5 className="bold">Details:</h5>
+                        <Input required onChange={this.setClientCode} className="invoiceInput" type="text" id="clientCode" name="clientCode" placeholder="Client Number"/>
+                        <b>GST Num: 85-105-434</b>
+                        <p>Our account for direct crediting<br />
+                        <b>06-0507-0052045-00</b></p>
+                      </Col>
+                    </Row>
+
+                    <Row className="invoiceTableRow">
+                      <Col>
+                        {/* Table */}
+                        <Table className="invoiceTable" size="md">
+                          <thead>
+                            <tr>
+                              <th>Order #</th>
+                              <th width="30%">Description</th>
+                              <th width="15%">Quantity</th>
+                              <th width="15%">Unit Price</th>
+                              <th width="20%">Sub total</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                            {this.state.items.map( (i) => (
+                              <tr key={i.key}>
+                                <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemOrderNumber(i.key, e)} type="text" name="code" placeholder="Order Number" /></td>
+                                <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" name="desc" placeholder="Description" /></td>
+                                <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" name="quantity" placeholder="Quantity"/></td>
+                                <td><Input required className="tableInput" key={i.key} onChange={(e) => this.setItemUnitPrice(i.key, e)} type="number" step="0.01" name="price" placeholder="Unit Price"/></td>
+                                <td width="5%">{ i.totalPrice !== "" ? <p>{formatToPrice(i.totalPrice)}</p> : <p>$0.00</p> }</td>
+                                {/* <td><Button className="glyphicon-remove" color="danger" onClick={this.removeRow}>Remove Item</Button></td> */}
+                              </tr>
+                            ))}
+
+                            <tr>
+                              <td><Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button></td>
+                              <td><Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button></td>
+                              <td> {/* Spacer */} </td>
+
+                              <td colSpan="2">
+                                <Table bordered>
+                                  <tbody>
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Subtotal:</Col>
+                                          <Col md="6">{formatToPrice(this.state.subtotal)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Tax(15%):</Col>
+                                          <Col md="6">{formatToPrice(this.state.tax)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
+
+                                    <tr>
+                                      <td>
+                                        <Row className="totals">
+                                          <Col md="6">Total:</Col>
+                                          <Col md="6">{formatToPrice(this.state.total)}</Col>
+                                        </Row>
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </td>
+                            </tr>
+
+                          </tbody>
+                        </Table>
+                      </Col>
+                    </Row>
+
+                  <div className="invoiceFooter">
+                    <Row>
+                      {/* Our Contact Details */}
+                      <Col className="leftBox" md="4">
+                        <h4>Contact Us:</h4>
+                          <p>Phone: 04-939-1711 <br />
+                          Fax: 04-939-1712 <br />
+                          Email: amba@xtra.co.nz</p>
+                      </Col>
+
+                      <Col md="3">
+                        {/* Spacing purposes only */}
+                      </Col>
+
+                      <Col className="rightBox" md="5">
+                        <h4>Address:</h4>
+                        <p>19-21 Jackson Street <br />
+                        Petone, Wellington <br />
+                        6035</p>
+                      </Col>
+                    </Row>
+
+                    <Row>
+                      <Col>
+                        <div className="footer">
+                          <h5>All totals are final and non-negotiable. Payments must be made by the specified due date
+                          with no exceptions. Unpaid accounts will incur late payment fees & collection costs</h5>
+                        </div>
+
+                      </Col>
+                    </Row>
+
+                  </div>
+
+
+                  </div>
+                </Form>
+              </CardBody>
+            </Card>
+          </Col>
+
+          <Col xs="12" md="12" lg="3">
+            <Card>
+              <CardHeader>Options</CardHeader>
+              <CardBody>
+                <Row>
+                  <Col>
+                    {/* <NavLink to="/invoices"> */}
+                      <Button outline type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
+                    {/* </NavLink> */}
+                  </Col>
+
+                  <Col>
+                    <NavLink to="/invoices">
+                      <Button outline className="fullWidthButton" color="danger">Cancel</Button>
+                    </NavLink>
+                  </Col>
+                </Row>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      );
+    }
+
   }
 
 }
