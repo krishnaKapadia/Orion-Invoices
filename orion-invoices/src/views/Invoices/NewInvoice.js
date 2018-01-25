@@ -232,12 +232,16 @@ class NewInvoice extends Component {
     this.props.history.push('/invoices');
   }
 
+  // TODO: After create invocie is submitted, state is not updated with the new invoice, requires route refresh
+  // TODO: Invoice number must increment correctly
   render() {
-    if(this.props.location.state !== null) {
-      console.log(this.props.location.state);
+    /**
+    * If the state prop is passed then view only mode is shown,
+    * otherwise show empty invocie that is editable
+    */
+    if(typeof this.props.location.state !== "undefined") {
       const data = this.props.location.state.invoice;
       const items = data.items;
-      // console.log(data);
 
       return (
         <Row>
@@ -258,9 +262,9 @@ class NewInvoice extends Component {
 
                       <Col className="rightBox" md="4">
                         <h5 className="bold">Tax Invoice</h5>
-                        <p>Invoice #: {data.invoiceNumber} <br />
-                          Created: {data.date} <br />
-                          Due: {moment(data.date).add(15, 'days').format('LL')}</p>
+                        <p>Invoice #: {data.inv_number} <br />
+                          Created: {moment(data.date, 'DD-MM-YYYY').format('LL')} <br />
+                          <b>Due: {moment(data.date, 'DD-MM-YYYY').add(15, 'days').format('LL')}</b></p>
                       </Col>
                     </Row>
 
@@ -269,7 +273,6 @@ class NewInvoice extends Component {
                       <Col md="4">
                         <h5 className="bold">To:</h5>
                         <h5>{data.client_name}</h5>
-                        {/* <Input className="invoiceInput" value={data.client_name} type="text" id="clientName" name="clientName" placeholder="Enter the clients name" /> */}
                         {data.client_address && <h5>{data.client_address}</h5> }
                       </Col>
 
@@ -281,9 +284,9 @@ class NewInvoice extends Component {
                       <Col className="rightBox" md="4">
                         <h5 className="bold">Details:</h5>
                         {/* <Input required value={data.client_code} className="invoiceInput" type="text" id="clientCode" name="clientCode"/> */}
-                        <p>Client Code: <b>{data.client_code}</b></p>
-                        <b>GST Num: 85-105-434</b>
-                        <p>Our account for direct crediting<br />
+                        <p>Client Code: <b>{data.client_code}</b><br />
+                        <b>GST Num: 85-105-434</b><br />
+                        Our account for direct crediting<br />
                         <b>06-0507-0052045-00</b></p>
                       </Col>
                     </Row>
@@ -304,18 +307,18 @@ class NewInvoice extends Component {
                           <tbody>
 
                             {items.map( (i) => (
-                              <tr key={i.id}>
-                                <td><p key={i.id}>{i.code}</p></td>
-                                <td><p key={i.id}>{i.desc}</p></td>
-                                <td><p key={i.id}>{i.quantity}</p></td>
-                                <td><p key={i.id}>{formatToPrice(i.price)}</p></td>
-                                <td><p key={i.id}>{formatToPrice(parseFloat(i.price) * parseFloat(i.quantity))}</p></td>
+                              <tr key={i._id}>
+                                <td><p key={i._id}>{i.code}</p></td>
+                                <td><p key={i._id}>{i.desc}</p></td>
+                                <td><p key={i._id}>{i.quantity}</p></td>
+                                <td><p key={i._id}>{formatToPrice(i.price)}</p></td>
+                                <td><p key={i._id}>{formatToPrice(parseFloat(i.price) * parseFloat(i.quantity))}</p></td>
                               </tr>
                             ))}
 
                             <tr>
-                              <td><Button className="fullWidthButton" color="primary" onClick={this.addItem}> + </Button></td>
-                              <td><Button className="fullWidthButton" color="danger" onClick={this.removeItem}> - </Button></td>
+                              <td></td>
+                              <td></td>
                               <td> {/* Spacer */} </td>
 
                               <td colSpan="2">
@@ -403,12 +406,18 @@ class NewInvoice extends Component {
               <CardHeader>Options</CardHeader>
               <CardBody>
                 <Row>
-                  <Col>
+                  <Col xs="12" md="12" lg="12">
                     <NavLink to="/invoices">
-                      <Button outline type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Back</Button>
+                      <Button outline type="submit" form="invoiceForm" className="fullWidthButton topButton" color="primary">Back</Button>
                     </NavLink>
                   </Col>
+
+                  {/* Print Button */}
+                  <Col xs="12" md="12" lg="12">
+                    <Button outline className="fullWidthButton topButton" color="info">Print</Button>
+                  </Col>
                 </Row>
+
               </CardBody>
             </Card>
           </Col>
