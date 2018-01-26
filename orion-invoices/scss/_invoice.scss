@@ -37,3 +37,49 @@ input[type=number]::-webkit-outer-spin-button {
        color: transparent;
     }
 }
+
+
+// Print format
+@media print {
+
+  @page {
+    size: A4;
+    margin-top: -1cm;
+  }
+
+  // Hide everything
+  .app-header, .sidebar, .aside-menu, .app-footer, .breadcrumb, .noPrint {
+    display: none;
+  }
+
+  .invoiceCard {
+    border-style: none !important;
+    margin: 0cm !important;
+    padding: 0cm !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  // Reduces table row heights
+  tr, td {
+    padding: 0.2cm 0 !important;
+  }
+
+  // Show invoice area
+  .invoice-container {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0cm !important;
+    padding: 0cm !important;
+  }
+
+  .invoiceFooter {
+    display: block;
+    position: fixed;
+    bottom: 0;
+    width: 90% !important;
+    margin-bottom: 1cm !important;
+  }
+
+
+}
