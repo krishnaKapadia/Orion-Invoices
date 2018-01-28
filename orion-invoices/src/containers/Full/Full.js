@@ -1,12 +1,15 @@
 import React, {Component} from 'react';
 import {Link, Switch, Route, Redirect} from 'react-router-dom';
 import {Container} from 'reactstrap';
+
+// Components
 import Header from '../../components/Header/';
 import Sidebar from '../../components/Sidebar/';
 import Breadcrumb from '../../components/Breadcrumb/';
 import Aside from '../../components/Aside/';
 import Footer from '../../components/Footer/';
 
+// Views
 import Dashboard from '../../views/Dashboard/';
 import Profile from '../../views/Profile/Profile';
 import Clients from '../../views/Clients/';
@@ -20,15 +23,10 @@ class Full extends Component {
 
   constructor(props) {
     super(props);
-
-    this.toJobsFromNewOrder = this.toJobsFromNewOrder.bind(this);
-  }
-
-  toJobsFromNewOrder() {
-
   }
 
   render() {
+
     return (
       <div className="app">
         <Header />
@@ -44,8 +42,8 @@ class Full extends Component {
                 <Route path="/employees" name="Employees" component={Employees} />
                 <Route path="/orders/newOrder" name="New Order" component={NewOrder} />
                 <Route path="/orders" name="Orders" component={Jobs} />
-                <Route path="/invoices/createInvoice" name="Create Invoice" component={NewInvoice} />
                 <Route path="/invoices" name="Invoices" component={Invoices} />
+                <Route path="/invoices/createInvoice" name="Create Invoice" component={NewInvoice} />
                 <Redirect from="/" to="/dashboard"/>
               </Switch>
             </Container>

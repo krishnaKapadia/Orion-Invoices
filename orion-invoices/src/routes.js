@@ -7,6 +7,7 @@ const routes = {
   '/orders/newOrder': 'New Order',
   '/orders': 'Orders',
   '/invoices/createInvoice': 'Create Invoice',
-  '/invoices': 'Invoices'
+  '/invoices': 'Invoices',
+  '/login': 'Login'
 };
 export default routes;

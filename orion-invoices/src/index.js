@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {HashRouter, Route, Switch} from 'react-router-dom';
+import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
+
+// Redux
+import { Provider } from 'react-redux';
+import { createStore, applyMiddleware } from 'redux';
+import rootReducer from './Redux/Reducers/reducers';
 
 // Styles
 // Import Font Awesome Icons Set
@@ -14,11 +19,22 @@ import '../scss/core/_dropdown-menu-right.scss'
 
 // Containers
 import Full from './containers/Full/'
+import Authenticate from './components/Authentication/Authenticate';
+import Login from './views/Login';
+
+const createReduxStore = applyMiddleware()(createStore);
 
 ReactDOM.render((
-  <HashRouter>
-    <Switch>
-      <Route path="/" name="Home" component={Full} />
-    </Switch>
-  </HashRouter>
+  <Provider store={createReduxStore(rootReducer)}>
+    <HashRouter>
+      <Switch>
+        {/* Requires user login to access app */}
+        <Route path="/login" name="Login" component={Login}/>
+        <Redirect from="/" to="/login"/>
+        <Route component={Authenticate}>
+          <Route path="/" name="Home" component={Full} />
+        </Route>
+      </Switch>
+    </HashRouter>
+  </Provider>
 ), document.getElementById('root'));
