@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
-
+import createBrowserHistory from 'history/createBrowserHistory';
 // Redux
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
@@ -23,17 +23,16 @@ import Authenticate from './components/Authentication/Authenticate';
 import Login from './views/Login';
 
 const createReduxStore = applyMiddleware()(createStore);
+const history = createBrowserHistory();
 
 ReactDOM.render((
   <Provider store={createReduxStore(rootReducer)}>
     <HashRouter>
       <Switch>
         {/* Requires user login to access app */}
-        <Route path="/login" name="Login" component={Login}/>
-        <Redirect from="/" to="/login"/>
-        <Route component={Authenticate}>
-          <Route path="/" name="Home" component={Full} />
-        </Route>
+        <Route history={history} path="/" name="Home" component={Full} />
+
+        {/* <Redirect from="/" to="/login"/> */}
       </Switch>
     </HashRouter>
   </Provider>

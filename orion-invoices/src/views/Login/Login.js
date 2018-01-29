@@ -21,13 +21,21 @@ class Login extends Component {
   * Authenticates entered user credentials with backend API
   */
   authenticateLogin(data) {
-    console.log(data);
     const userCredentials = {
       username: data.get("username"),
       password: data.get("password")
     }
 
-    // var result = axios.get("http://localhost:4000/api/v1/users/")
+    axios.post("http://localhost:4000/api/v1/users/login", userCredentials).then((response) => {
+      if(response.data.result) {
+        this.props.setLogin(true);
+
+        console.log(this.props.isLoggedIn);
+
+        // redirect to dashboard
+         this.props.history.push("/dashboard");
+      }
+    })
   }
 
   /**

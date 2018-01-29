@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 /**
@@ -12,18 +13,14 @@ class Authenticate extends Component {
     const { dispatch, currentURL } = this.props;
 
     if(!this.props.isLoggedIn) {
-
-      console.log("User not logged in");
-
       // Redirect
-      // browserHistory.replace('/')
+      this.props.history.push("/login");
     }
   }
 
   render() {
-    return (
-      <div></div>
-    );
+    if(this.props.isLoggedIn) return(<Redirect to="/dashboard" />);
+    else return(null);
   }
 
 }
