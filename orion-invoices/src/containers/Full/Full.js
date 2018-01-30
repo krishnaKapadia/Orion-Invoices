@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import {Link, Switch, Route, Redirect} from 'react-router-dom';
 import {Container} from 'reactstrap';
+import { connect } from 'react-redux';
+
 import Header from '../../components/Header/';
 import Sidebar from '../../components/Sidebar/';
 import Breadcrumb from '../../components/Breadcrumb/';
@@ -16,7 +18,7 @@ import NewOrder from '../../views/Jobs/NewOrder';
 import Invoices from '../../views/Invoices/Invoices';
 import NewInvoice from '../../views/Invoices/NewInvoice';
 import Login from '../../views/Login';
-import { connect } from 'react-redux';
+import Register from '../../views/Register/Register';
 
 class Full extends Component {
 
@@ -31,7 +33,7 @@ class Full extends Component {
       return (
         <Switch>
           <div className="app">
-            <Header />
+            <Header history={this.props.history}/>
             <div className="app-body">
               <Sidebar {...this.props}/>
               <main className="main">
@@ -60,7 +62,8 @@ class Full extends Component {
     }else{
       return (
         <Switch>
-          <Route history={this.props.history} path="/login" name="Login" component={Login}/>
+          <Route history={this.props.history} path="/login" name="Login" component={Login} />
+          <Route history={this.props.history} path="/register" name="Register" component={Register} />
           <Redirect from="/" to="/login"/>
         </Switch>
       );

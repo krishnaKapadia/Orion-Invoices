@@ -8,8 +8,17 @@ import {
   NavLink,
   Badge,
 } from 'reactstrap';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setLogin } from '../../Redux/Actions/index';
 
 class Header extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.logout = this.logout.bind(this);
+  }
 
   sidebarToggle(e) {
     e.preventDefault();
@@ -29,6 +38,17 @@ class Header extends Component {
   asideToggle(e) {
     e.preventDefault();
     document.body.classList.toggle('aside-menu-hidden');
+  }
+
+  /**
+  * Sets the redux isLoggedIn state variable to reflect logout,
+  * and show the login page
+  */
+  logout() {
+    // set redux state variable
+    this.props.setLogin(false);
+    // Redirect
+    this.props.history.push("/login");
   }
 
   render() {
@@ -55,7 +75,7 @@ class Header extends Component {
           </NavItem>
 
           <NavItem>
-              <NavLink href="#">Log out</NavLink>
+              <NavLink href="" onClick={this.logout}>Log out</NavLink>
           </NavItem>
 
         </Nav>
@@ -70,4 +90,23 @@ class Header extends Component {
   }
 }
 
-export default Header;
+/**
+* Sets props to be accessed by the Header component from redux
+* global state. Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    isLoggedIn: state.isLoggedIn
+  }
+}
+
+/**
+* Sets action functions to be used by the Header component through props.
+* Functions
+*/
+function mapDispatchToProps(dispatch) {
+  // When setLogin is called, result is passed to all reducers
+  return bindActionCreators({ setLogin: setLogin }, dispatch);
+}
+
+export default connect()(Header);

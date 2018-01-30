@@ -56,7 +56,8 @@
     "reactstrap": "^5.0.0-alpha.3",
     "reactstrap-validation": "^1.0.0-beta.9",
     "redux": "^3.7.2",
-    "simple-line-icons": "^2.4.1"
+    "simple-line-icons": "^2.4.1",
+    "velocity-react": "^1.3.3"
   },
   "scripts": {
     "dev": "webpack -d --progress --watch --profile --json > compilation-stats.json --env.dev",

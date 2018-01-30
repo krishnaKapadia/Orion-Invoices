@@ -8,6 +8,7 @@ const routes = {
   '/orders': 'Orders',
   '/invoices/createInvoice': 'Create Invoice',
   '/invoices': 'Invoices',
-  '/login': 'Login'
+  '/login': 'Login',
+  '/register': 'Register'
 };
 export default routes;

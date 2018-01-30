@@ -7,28 +7,31 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setLogin } from '../../Redux/Actions/index';
 import { ToastContainer, toast } from 'react-toastify';
+
 import axios from 'axios';
 
-class Login extends Component {
+class Register extends Component {
 
   constructor(props) {
     super(props);
 
     this.handleSubmit      = this.handleSubmit.bind(this);
-    this.authenticateLogin = this.authenticateLogin.bind(this);
+    this.register = this.register.bind(this);
   }
 
   /**
-  * Authenticates entered user credentials with backend API
+  * Registers entered user credentials with backend API
   */
-  authenticateLogin(data) {
+  register(data) {
     const userCredentials = {
       username: data.get("username"),
-      password: data.get("password")
+      password: data.get("password"),
+      email: data.get("email")
     }
 
-    axios.post("http://localhost:4000/api/v1/users/login", userCredentials).then((response) => {
+    axios.post("http://localhost:4000/api/v1/users", userCredentials).then((response) => {
       if(response.data.result) {
+
         this.props.setLogin(true);
 
         console.log(this.props.isLoggedIn);
@@ -36,12 +39,13 @@ class Login extends Component {
         // redirect to dashboard
          this.props.history.push("/dashboard");
 
-         toast.success("Login Successful! Welcome to Orion invoices", {
+         toast.success("User registered! Welcome to Orion invoices", {
            position: toast.POSITION.BOTTOM_RIGHT
          });
       }
     }).catch((err) => {
-      if(err) toast.error("Could not login, please try again", {
+      console.log(err);
+      if(err) toast.error(err + " Could not register, please try again", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
     })
@@ -57,7 +61,7 @@ class Login extends Component {
     const data = new FormData(e.target);
 
     // Delegate
-    this.authenticateLogin(data);
+    this.register(data);
   }
 
   render() {
@@ -70,28 +74,36 @@ class Login extends Component {
               <CardGroup>
                 <Card className="p-4">
                   <CardBody>
-                    <h1>Login</h1>
-                    <p className="text-muted">Sign In to your account</p>
+                    <h1>Register</h1>
+                    <p className="text-muted">Create your account</p>
 
                     <Form onSubmit={this.handleSubmit}>
                       <InputGroup className="mb-3">
+                        <InputGroupAddon>@</InputGroupAddon>
+                        <Input type="text" placeholder="Email" name="email" required />
+                      </InputGroup>
+
+                      <InputGroup className="mb-3">
                         <InputGroupAddon><i className="icon-user"></i></InputGroupAddon>
-                        <Input type="text" placeholder="Username" name="username" required/>
+                        <Input type="text" placeholder="Username" name="username" required />
+                      </InputGroup>
+
+                      <InputGroup className="mb-3">
+                        <InputGroupAddon><i className="icon-lock"></i></InputGroupAddon>
+                        <Input type="password" placeholder="Password" name="password" required />
                       </InputGroup>
 
                       <InputGroup className="mb-4">
                         <InputGroupAddon><i className="icon-lock"></i></InputGroupAddon>
-                        <Input type="password" placeholder="Password" name="password" required/>
+                        <Input type="password" placeholder="Repeat password" required/>
                       </InputGroup>
 
                       <Row>
                         <Col xs="6">
-                          <Button type="submit" color="primary" className="px-4">Login</Button>
+                          <Button color="success" block>Create Account</Button>
+                          {/* <Button type="submit" color="primary" className="px-4">Login</Button> */}
                         </Col>
 
-                        {/* <Col xs="6" className="text-right">
-                          <Button color="link" className="px-0">Forgot password?</Button>
-                        </Col> */}
                       </Row>
 
                     </Form>
@@ -101,10 +113,9 @@ class Login extends Component {
                 <Card className="text-white bg-primary py-5 d-md-down-none" style={{ width: 44 + '%' }}>
                   <CardBody className="text-center">
                     <div>
-                      <h2>Sign up</h2>
-                      <p>Sign up to the Orion Invoices platform to start saving
-                        time and help to better manage your business.</p>
-                      <Button color="primary" className="mt-3" onClick={() => this.props.history.push('/register')} active>Register Now!</Button>
+                      <h2>Login</h2>
+                      <p>If you already have an account then just login!</p>
+                      <Button color="primary" className="mt-3" onClick={() => this.props.history.push('/login')} active>Login!</Button>
                     </div>
                   </CardBody>
                 </Card>
@@ -136,4 +147,4 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ setLogin: setLogin }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Register);
