@@ -5,6 +5,8 @@ import {
   Card, CardHeader, CardBody, Row, Col, Button,
   Table
 } from 'reactstrap';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 class Jobs extends Component {
 
@@ -15,21 +17,81 @@ class Jobs extends Component {
     super(props);
 
     this.state = {
-      orders: []
+      orders: [], currentOrderCount: 0, completedOrderCount: 0
     }
+
+    this.getAllOrders = this.getAllOrders.bind(this);
+    this.deleteOrderFromState = this.deleteOrderFromState.bind(this);
+    this.updateOrder = this.updateOrder.bind(this);
   }
 
   componentDidMount() {
-    var order = {
-      code: 1, clientName: "Mitsubishi",
-      orderlist: { o1: "Caps with red logo x 10: $5.00 each", o2: "Caps with white logo x 50: $4.50 each" },
-      created: "15 Nov 2017"
-    }
+    this.getAllOrders();
+  }
 
+
+  /**
+  * Retrieves all the invoices accociated with the business associated with the logged in user
+  */
+  getAllOrders() {
+    axios.get("http://localhost:4000/api/v1/orders").then((data) => {
+      var orders = [];
+      var currentOrderCount = 0;
+      var completedOrderCount = 0;
+
+      data.data.orders.map( (order) => {
+        var date = new Date(order.created);
+        date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        order.created = date;
+
+        orders.push(order);
+
+        if(order.completed){
+          completedOrderCount++;
+        }else{
+          currentOrderCount++;
+        }
+      });
+
+      this.setState({ orders, currentOrderCount, completedOrderCount });
+    }).catch((err) => {
+      if(err) console.log(err);
+    })
+  }
+
+  /**
+  * Deletes given order from application state
+  */
+  deleteOrderFromState(id, data) {
     var orders = this.state.orders;
-    orders.push(order);
+    var filteredOrders = orders.filter( (order) => {
+      return order._id !== id;
+    });
 
-    this.setState( { orders });
+    if(data.completed){
+      this.setState( { orders: filteredOrders, completedOrderCount: this.state.completedOrderCount - 1 });
+    }else{
+      this.setState( { orders: filteredOrders, currentOrderCount: this.state.currentOrderCount - 1 });
+    }
+  }
+
+  /**
+  * Updates an existing order in local application state, Passed to Order Component
+  */
+  updateOrder(id, data) {
+    var orders = this.state.orders;
+
+    // console.log(order);
+    // console.log(data);
+    toast.success("Order Updated!", {
+      position: toast.POSITION.BOTTOM_RIGHT
+    });
+
+
+    var index = orders.findIndex(x => x._id == id);
+    orders[index] = data;
+
+    this.setState({ orders });
   }
 
   addOrder(data, items, date) {
@@ -48,11 +110,12 @@ class Jobs extends Component {
   render() {
     return (
       <div className="animated fadeIn">
+        <ToastContainer />
         <Row>
           <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
             <Card>
               <CardBody>
-                <h3><i className="icon-drawer blue paddingRight" /> Current Orders: 10</h3>
+                <h3><i className="icon-drawer blue paddingRight" /> Current Orders: {this.state.currentOrderCount}</h3>
               </CardBody>
             </Card>
           </Col>
@@ -60,7 +123,7 @@ class Jobs extends Component {
           <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
             <Card>
               <CardBody>
-                <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: 500</h3>
+                <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: {this.state.completedOrderCount}</h3>
               </CardBody>
             </Card>
           </Col>
@@ -86,8 +149,6 @@ class Jobs extends Component {
             <Table bordered>
               <thead>
                 <tr>
-                  <th> </th>
-                  <th>Order Code</th>
                   <th>Client Name</th>
                   <th>Order List</th>
                   <th>Created</th>
@@ -96,10 +157,13 @@ class Jobs extends Component {
               </thead>
 
               <tbody>
-                <Order code="1" clientName="Arrow Uniforms"
-                  orderList={ {o1: "Caps with red logo x 10: $5.00 each", o2: "Caps with white logo x 50: $4.50 each"}}
-                  created="15 Nov 2017"
-                />
+                {
+                  this.state.orders.map( (o) => {
+                    return(
+                      <Order key={o._id} type="order" data={o} updateOrder={this.updateOrder} deleteOrderFromState={this.deleteOrderFromState} />
+                    )
+                  })
+                }
               </tbody>
 
             </Table>
