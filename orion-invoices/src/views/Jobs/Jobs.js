@@ -23,6 +23,7 @@ class Jobs extends Component {
     this.getAllOrders = this.getAllOrders.bind(this);
     this.deleteOrderFromState = this.deleteOrderFromState.bind(this);
     this.updateOrder = this.updateOrder.bind(this);
+    this.toggleCompleted = this.toggleCompleted.bind(this);
   }
 
   componentDidMount() {
@@ -80,18 +81,34 @@ class Jobs extends Component {
   */
   updateOrder(id, data) {
     var orders = this.state.orders;
+    var index = orders.findIndex(x => x._id == id);
+    orders[index] = data;
 
-    // console.log(order);
-    // console.log(data);
     toast.success("Order Updated!", {
       position: toast.POSITION.BOTTOM_RIGHT
     });
 
+    this.setState({ orders });
+  }
+
+  /**
+  * Toggles completed status on a order in local application state
+  */
+  toggleCompleted(id, status) {
+    var orders = this.state.orders;
 
     var index = orders.findIndex(x => x._id == id);
-    orders[index] = data;
+    orders[index].completed = status;
 
-    this.setState({ orders });
+    var completedOrderCount = this.state.completedOrderCount;
+    if(status) completedOrderCount++;
+    else completedOrderCount--;
+
+    toast.success("Order Completed!", {
+      position: toast.POSITION.BOTTOM_RIGHT
+    });
+
+    this.setState({ orders, completedOrderCount });
   }
 
   addOrder(data, items, date) {
@@ -160,7 +177,7 @@ class Jobs extends Component {
                 {
                   this.state.orders.map( (o) => {
                     return(
-                      <Order key={o._id} type="order" data={o} updateOrder={this.updateOrder} deleteOrderFromState={this.deleteOrderFromState} />
+                      <Order key={o._id} type="order" data={o} toggleCompleted={this.toggleCompleted} updateOrder={this.updateOrder} deleteOrderFromState={this.deleteOrderFromState} />
                     )
                   })
                 }

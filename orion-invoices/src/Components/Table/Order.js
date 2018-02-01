@@ -16,6 +16,7 @@ class Order extends Component {
     }
 
     this.toggleEdit = this.toggleEdit.bind(this);
+    this.toggleComplete = this.toggleComplete.bind(this);
     this.deleteOrder = this.deleteOrder.bind(this);
     this.editOrder = this.editOrder.bind(this);
     this.setOrderCode = this.setOrderCode.bind(this);
@@ -28,18 +29,31 @@ class Order extends Component {
   componentDidMount() {
     var data = Object.assign({}, this.props.data);
     console.log(data);
-    this.setState({ data });
+    this.setState({ data, completed: this.props.data.completed });
   }
 
+  /**
+  * Toggles edit modal
+  */
   toggleEdit () {
     this.setState({
       editModal: !this.state.editModal
     })
   }
 
+  /**
+  * Toggles completed order status
+  */
   toggleComplete() {
-    this.setState({
-      completed: !this.state.completed
+    this.props.data.completed = !this.props.data.completed;
+
+    // Update via API
+    axios.put(`http://localhost:4000/api/v1/orders/${this.props.data._id}`, this.props.data).then( (response) => {
+      this.props.toggleCompleted(this.props.data._id, this.props.data.completed);
+    }).catch((err) => {
+      if(err) toast.error("Could not save updated order " + err, {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
     })
   }
 
@@ -148,14 +162,15 @@ class Order extends Component {
           <td>
             <Row>
               <Col className="topButton">
-                <Button outline className="fullWidthButton" color="primary blue" onClick={this.toggleEdit}>Edit</Button>
+                {this.state.completed && <Button outline className="fullWidthButton" color="primary blue" onClick={this.toggleEdit}>Edit</Button>}
+                {!this.state.completed && <Button className="fullWidthButton" color="primary white" onClick={this.toggleEdit}>Edit</Button>}
               </Col>
             </Row>
 
             <Row>
               <Col>
-                <Button outline className="fullWidthButton" color="secondary blue" onClick={this.toggleComplete}>Mark Completed</Button>
-              </Col>
+                {this.state.completed && <Button outline className="fullWidthButton" color="secondary blue" onClick={this.toggleComplete}>Completed</Button>}
+                {!this.state.completed && <Button className="fullWidthButton" color="secondary white" onClick={this.toggleComplete}>Mark Completed</Button>}              </Col>
             </Row>
           </td>
 
