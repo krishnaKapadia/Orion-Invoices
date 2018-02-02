@@ -7,7 +7,9 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import Loader from '../../Components/Loading/bars.svg';
 
+// TODO Loading svg errors
 class Jobs extends Component {
 
   // TODO fetch all current orders from API on every page load.
@@ -17,7 +19,7 @@ class Jobs extends Component {
     super(props);
 
     this.state = {
-      orders: [], currentOrderCount: 0, completedOrderCount: 0
+      orders: [], currentOrderCount: 0, completedOrderCount: 0, loading: true
     }
 
     this.getAllOrders = this.getAllOrders.bind(this);
@@ -163,6 +165,10 @@ class Jobs extends Component {
 
           <CardBody>
             {/* add, responsive prop to tag to make the table responsive */}
+
+            {/* { this.state.loading &&  } */}
+            {/* <Loader width={100} height={100} /> */}
+
             <Table bordered>
               <thead>
                 <tr>
