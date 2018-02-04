@@ -7,9 +7,9 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-import Loader from '../../Components/Loading/bars.svg';
+// import Spinner from '../../Components/Loading/Spinner';
+import Spinner from 'react-spinkit';
 
-// TODO Loading svg errors
 class Jobs extends Component {
 
   // TODO fetch all current orders from API on every page load.
@@ -31,7 +31,6 @@ class Jobs extends Component {
   componentDidMount() {
     this.getAllOrders();
   }
-
 
   /**
   * Retrieves all the invoices accociated with the business associated with the logged in user
@@ -56,7 +55,7 @@ class Jobs extends Component {
         }
       });
 
-      this.setState({ orders, currentOrderCount, completedOrderCount });
+      this.setState({ orders, currentOrderCount, completedOrderCount, loading: false });
     }).catch((err) => {
       if(err) console.log(err);
     })
@@ -127,30 +126,39 @@ class Jobs extends Component {
   }
 
   render() {
-    return (
-      <div className="animated fadeIn">
-        <ToastContainer />
-        <Row>
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            <Card>
-              <CardBody>
-                <h3><i className="icon-drawer blue paddingRight" /> Current Orders: {this.state.currentOrderCount}</h3>
-              </CardBody>
-            </Card>
-          </Col>
 
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            <Card>
-              <CardBody>
-                <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: {this.state.completedOrderCount}</h3>
-              </CardBody>
-            </Card>
-          </Col>
+    if(this.state.loading) {
+      return(
+        // TODO vertically center loading spinner
+        <div className="animated fadeIn darken">
+          <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
+        </div>
+      );
+    }else {
+      return (
+        <div className="animated fadeIn">
+          <ToastContainer />
+          <Row>
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              <Card>
+                <CardBody>
+                  <h3><i className="icon-drawer blue paddingRight" /> Current Orders: {this.state.currentOrderCount}</h3>
+                </CardBody>
+              </Card>
+            </Col>
 
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            <Card>
-              <CardBody>
-                <NavLink to="/orders/newOrder">
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              <Card>
+                <CardBody>
+                  <h3><i className="icon-drawer blue paddingRight" /> Completed Orders: {this.state.completedOrderCount}</h3>
+                </CardBody>
+              </Card>
+            </Col>
+
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              <Card>
+                <CardBody>
+                  <NavLink to="/orders/newOrder">
                   <Button className="fullWidthButton" color="primary" onClick={this.toggle}>New Order</Button>
                 </NavLink>
               </CardBody>
@@ -166,8 +174,6 @@ class Jobs extends Component {
           <CardBody>
             {/* add, responsive prop to tag to make the table responsive */}
 
-            {/* { this.state.loading &&  } */}
-            {/* <Loader width={100} height={100} /> */}
 
             <Table bordered>
               <thead>
@@ -195,6 +201,7 @@ class Jobs extends Component {
 
       </div>
     );
+    }
   }
 
 }

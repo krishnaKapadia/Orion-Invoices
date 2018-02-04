@@ -49,20 +49,6 @@ module.exports = (env = {}) => {
           loader: 'html-loader'
         },
         {
-          test: /\.svg$/,
-          use: [
-            {
-              loader: "babel-loader"
-            },
-            {
-              loader: "react-svg-loader",
-              options: {
-                jsx: true // true outputs JSX tags
-              }
-            }
-          ]
-        },
-        {
           test: /\.(scss)$/,
           use: ['css-hot-loader'].concat(extractSCSS.extract({
             fallback: 'style-loader',
@@ -85,7 +71,7 @@ module.exports = (env = {}) => {
           })
         },
         {
-          test: /\.(png|jpg|jpeg|gif|ico)$/,
+          test: /\.(png|jpg|jpeg|gif|ico|svg)$/,
           use: [
             {
               // loader: 'url-loader'
@@ -97,12 +83,18 @@ module.exports = (env = {}) => {
           ]
         },
         {
-          test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
+          test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
           loader: 'file-loader',
           options: {
             name: './fonts/[name].[hash].[ext]'
           }
         }]
+    },
+    resolveLoader: {
+      modules: ['node_modules'],
+    },
+    resolve: {
+      modules: ['node_modules'],
     },
     plugins: [
       new webpack.HotModuleReplacementPlugin(),

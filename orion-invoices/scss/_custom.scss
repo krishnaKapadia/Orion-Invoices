@@ -1,4 +1,16 @@
-// Here you can add other styles
+// Loading spinner styles
+.loadingSpinner {
+  position:absolute; top:50%; left:50%;
+  display:table-cell;
+  -ms-transform: scale(2) rotate(45deg); /* IE 9 */
+  -webkit-transform: scale(2) rotate(45deg); /* Safari */
+  transform: scale(2) rotate(45deg);
+}
+.darken {
+  position: relative;
+  height: 70vh;
+}
+
 .paddingLeft {
   margin-left: 10px;
 }
@@ -6,6 +18,7 @@
 .paddingRight {
   margin-right: 10px;
 }
+
 
 .white {
   color: white;
