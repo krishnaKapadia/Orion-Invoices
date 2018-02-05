@@ -6,14 +6,14 @@ import {
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
-
+import Spinner from 'react-spinkit'
 class Invoices extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      invoices: [], invoiceCount: 0,
+      invoices: [], invoiceCount: 0, loading: true
     }
 
     // this.addInvoice = this.addInvoice.bind(this);
@@ -48,32 +48,40 @@ class Invoices extends Component {
         invoiceCount++;
       });
 
-      this.setState({ invoices, invoiceCount });
+      this.setState({ invoices, invoiceCount, loading: false });
     }).catch( (err) => {
+      this.setState({ loading: false });
       if(err) console.log(err);
     });
   }
 
   render() {
-    return (
-      <div className="animated fadeIn">
-        <Row>
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+    if(this.state.loading) {
+      return(
+        <div className="animated fadeIn darken">
+          <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
+        </div>
+      );
+    }else {
+      return (
+        <div className="animated fadeIn">
+          <Row>
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
 
-            <Card>
-              <CardBody>
-                <h3><i className="icon-bubble blue paddingRight" /> Invoices: {this.state.invoiceCount}</h3>
-              </CardBody>
-            </Card>
-          </Col>
+              <Card>
+                <CardBody>
+                  <h3><i className="icon-bubble blue paddingRight" /> Invoices: {this.state.invoiceCount}</h3>
+                </CardBody>
+              </Card>
+            </Col>
 
-          <Col xs={{ size: 0 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            {/* EMPTY */}
-          </Col>
+            <Col xs={{ size: 0 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              {/* EMPTY */}
+            </Col>
 
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            <Card>
-              <CardBody>
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              <Card>
+                <CardBody>
                   <Row>
                     <Col>
                       <NavLink to="/invoices/createInvoice">
@@ -81,49 +89,50 @@ class Invoices extends Component {
                       </NavLink>
                     </Col>
 
-                    {/* <Col>
-                      <Button outline className="fullWidthButton" color="danger">Remove Invoice</Button>
-                    </Col> */}
+                  {/* <Col>
+                    <Button outline className="fullWidthButton" color="danger">Remove Invoice</Button>
+                  </Col> */}
                   </Row>
-              </CardBody>
-            </Card>
-          </Col>
+                </CardBody>
+              </Card>
+            </Col>
 
-        </Row>
+          </Row>
 
-        <Card>
-          <CardHeader>
-            <i className="fa fa-align-justify"></i>Invoices
-          </CardHeader>
+          <Card>
+            <CardHeader>
+              <i className="fa fa-align-justify"></i>Invoices
+            </CardHeader>
 
-          <CardBody>
-            <Table hover responsive bordered>
-              <thead>
-                <tr>
-                  <th>Invoice Number</th>
-                  <th>Client Name</th>
-                  <th>Date Created</th>
-                  <th>Paid</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
+            <CardBody>
+              <Table hover responsive bordered>
+                <thead>
+                  <tr>
+                    <th>Invoice Number</th>
+                    <th>Client Name</th>
+                    <th>Date Created</th>
+                    <th>Paid</th>
+                    <th>Options</th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {
-                  this.state.invoices.map( (e) => {
-                    return(
-                      <TableRow key={e._id} type="invoice" data={e} togglePaid={this.togglePaid}/>
-                    )
-                  })
-                }
-              </tbody>
+                <tbody>
+                  {
+                    this.state.invoices.map( (e) => {
+                      return(
+                        <TableRow key={e._id} type="invoice" data={e} togglePaid={this.togglePaid}/>
+                      )
+                    })
+                  }
+                </tbody>
 
-            </Table>
-          </CardBody>
-        </Card>
+              </Table>
+            </CardBody>
+          </Card>
 
-      </div>
-    );
+        </div>
+      );
+    }
   }
 
 }

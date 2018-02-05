@@ -3,16 +3,19 @@ import { Row, Col, Button, Form, FormGroup, Input, Label,
 Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer , toast} from 'react-toastify';
+import Spinner from 'react-spinkit';
 
 class Order extends Component {
-
+  // TODO complete adding loading spinner to this page
   constructor(props) {
     super(props)
 
     this.state = {
       editModal: false,
       completed: false,
-      data: ''
+      data: '',
+      loadingButtonDelete: false,
+      loadingButton: false
     }
 
     this.toggleEdit = this.toggleEdit.bind(this);
@@ -28,7 +31,6 @@ class Order extends Component {
 
   componentDidMount() {
     var data = Object.assign({}, this.props.data);
-    console.log(data);
     this.setState({ data, completed: this.props.data.completed });
   }
 
@@ -46,11 +48,13 @@ class Order extends Component {
   */
   toggleComplete() {
     this.props.data.completed = !this.props.data.completed;
-
+    this.setState({ loadingButton: true });
     // Update via API
     axios.put(`http://localhost:4000/api/v1/orders/${this.props.data._id}`, this.props.data).then( (response) => {
+      this.setState({ loadingButton: false });
       this.props.toggleCompleted(this.props.data._id, this.props.data.completed);
     }).catch((err) => {
+      this.setState({ loadingButton: false });
       if(err) toast.error("Could not save updated order " + err, {
         position: toast.POSITION.BOTTOM_RIGHT
       });
@@ -61,13 +65,16 @@ class Order extends Component {
   * Deletes the associated order
   */
   deleteOrder() {
+    this.setState({ loadingButtonDelete: true });
     axios.delete(`http://localhost:4000/api/v1/orders/${this.props.data._id}`).then( (response) => {
+      this.setState({ loadingButtonDelete: false });
       toast.success("Order deleted!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
       // Removes from application state
       this.props.deleteOrderFromState(this.props.data._id, this.props.data);
     }).catch( (err) => {
+      this.setState({ loadingButtonDelete: false });
       if(err) toast.error("Could not delete order! Please try again. " + err, {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -79,13 +86,13 @@ class Order extends Component {
   */
   editOrder(o) {
     o.preventDefault();
-    console.log(this.state.data);
-    console.log(this.props.data);
+    this.setState({ loadingButton: true });
     axios.put(`http://localhost:4000/api/v1/orders/${this.props.data._id}`, this.state.data).then( (response) => {
-
+      this.setState({ loadingButton: false });
       this.toggleEdit();
       this.props.updateOrder(this.props.data._id, this.state.data);
     }).catch((err) => {
+      this.setState({ loadingButton: false });
       if(err) toast.error("Could not save updated order " + err, {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -233,7 +240,14 @@ class Order extends Component {
                   </div>
 
                   <Button color="secondary" className="floatRight" onClick={this.toggleEdit}>Cancel</Button>
-                  <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+
+                  {
+                    this.state.loadingButton && <Button color="primary" className="floatRight paddingRight"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                  }
+                  {
+                    !this.state.loadingButton && <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+                  }
+
                 </div>
               </ModalFooter>
             </Form>

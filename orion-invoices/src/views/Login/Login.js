@@ -8,11 +8,16 @@ import { bindActionCreators } from 'redux';
 import { setLogin } from '../../Redux/Actions/index';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
+import Spinner from 'react-spinkit';
 
 class Login extends Component {
 
   constructor(props) {
     super(props);
+
+    this.state = {
+      loading: false
+    }
 
     this.handleSubmit      = this.handleSubmit.bind(this);
     this.authenticateLogin = this.authenticateLogin.bind(this);
@@ -41,6 +46,7 @@ class Login extends Component {
          });
       }
     }).catch((err) => {
+      this.setState({ loading: false });
       if(err) toast.error("Could not login, please try again", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -52,6 +58,9 @@ class Login extends Component {
   */
   handleSubmit(e) {
     e.preventDefault();
+
+    // Set loading state to true
+    this.setState({ loading: true });
 
     // Create object from form data
     const data = new FormData(e.target);
@@ -86,7 +95,13 @@ class Login extends Component {
 
                       <Row>
                         <Col xs="6">
-                          <Button type="submit" color="primary" className="px-4">Login</Button>
+                          {
+                            this.state.loading &&  <Button color="primary" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                          }
+                          {
+                            !this.state.loading && <Button type="submit" color="primary" className="px-4">Login</Button>
+                          }
+
                         </Col>
 
                         {/* <Col xs="6" className="text-right">

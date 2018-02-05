@@ -4,6 +4,7 @@ import { Form, FormGroup, Label, Button, Input, Modal,
 } from 'reactstrap';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Spinner from 'react-spinkit';
 
 // Error notification
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,7 +16,7 @@ class TableRow extends Component {
     super(props);
 
     this.state = {
-      editModal: false,
+      editModal: false, loadingButton: false, loadingButtonDelete: false
     }
 
     this.toggle = this.toggle.bind(this);
@@ -36,16 +37,17 @@ class TableRow extends Component {
   * Deletes the client thats stored by this TableRow
   */
   deleteClient() {
+    this.setState({ loadingButtonDelete: true });
 
     axios.delete(`http://localhost:4000/api/v1/clients/${this.props.clientId}`).then( (response) => {
-      console.log(response);
-
+      this.setState({ loadingButtonDelete: false });
       toast.success("Client deleted!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
       // Remove from state
       this.props.deleteClientFromState(this.props.clientId);
     }).catch( (err) => {
+      this.setState({ loadingButtonDelete: false });
       if(err) toast.error("Could not delete client", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -74,8 +76,10 @@ class TableRow extends Component {
       address: data.get("clientAddress"), phone_num: data.get("clientPhone")
     }
 
+    this.setState({ loadingButton: true });
+
     axios.put(`http://localhost:4000/api/v1/clients/${this.props.clientId}`, newClient).then( (response) => {
-      console.log(response);
+      this.setState({ loadingButton: false });
 
       toast.success("Client updated!", {
         position: toast.POSITION.BOTTOM_RIGHT
@@ -84,25 +88,27 @@ class TableRow extends Component {
       this.toggle();
       this.props.updateClientFromState(this.props.clientId, newClient);
     }).catch( (err) => {
+      this.setState({ loadingButton: false });
       if(err) toast.error("Could not update client", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
     });
-
   }
 
   /**
   * Deletes the client thats stored by this TableRow
   */
   deleteEmployee(e) {
+    this.setState({ loadingButtonDelete: true });
     axios.delete(`http://localhost:4000/api/v1/employees/${this.props.employeeId}`).then( (response) => {
-
+      this.setState({ loadingButtonDelete: false });
       toast.success("Employee deleted!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
       // Remove from state
       this.props.deleteEmployeeFromState(this.props.employeeId);
     }).catch( (err) => {
+      this.setState({ loadingButtonDelete: false });
       if(err) toast.error("Could not delete employee! Please try again", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -114,7 +120,6 @@ class TableRow extends Component {
   */
   updateEmployee(e) {
     e.preventDefault();
-    console.log(e);
     var data = new FormData(e.target);
 
     // Handles cases of empty fields being submitted
@@ -122,17 +127,16 @@ class TableRow extends Component {
     if(data.get("employeeRate").trim() === '') data.set("employeeRate", "N/A");
     if(data.get("employeeAddress").trim() === '') data.set("employeeAddress", "N/A");
 
-    console.log(this.props.employeeId);
     var newEmployee = {
       code: data.get("employeeCode"), name: data.get("employeeName"),
       position: data.get("employeePosition"), rate: data.get("employeeRate"),
       phone_number: data.get("employeePhone"), address: data.get("employeeAddress")
     }
 
-    console.log(newEmployee);
+    this.setState({ loadingButton: true });
     // Perform axios POST operation to API
     axios.put(`http://localhost:4000/api/v1/employees/${this.props.employeeId}`, newEmployee).then( (response) => {
-
+      this.setState({ loadingButton: false });
       toast.success("Employee updated!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
@@ -140,6 +144,7 @@ class TableRow extends Component {
       this.toggle();
       this.props.updateEmployeeFromState(this.props.employeeId, newEmployee);
     }).catch( (err) => {
+      this.setState({ loadingButton: false });
       if(err) toast.error("Could not update employee", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -151,13 +156,16 @@ class TableRow extends Component {
   */
   togglePaid(e) {
     const data = this.props.data;
-    console.log(data.paid);
     data.paid = true;
+    this.setState({ loadingButton: true });
     axios.put(`http://localhost:4000/api/v1/invoices/${data._id}`, data).then((response) => {
-      console.log(response);
+      this.setState({ loadingButton: false });
       this.props.history.push('/invoices');
     }).catch((err) => {
-      if(err) console.log(err);
+      this.setState({ loadingButton: false });
+      if(err) toast.error("Could not mark paid!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      })
     })
   }
 
@@ -173,8 +181,6 @@ class TableRow extends Component {
 
             <td>
               {/* Error Toast notification */}
-              <ToastContainer />
-
               <Button outline className="fullWidthButton" color="info" onClick={this.toggle}>Edit</Button>
             </td>
 
@@ -204,11 +210,24 @@ class TableRow extends Component {
                 <ModalFooter>
                   <div className="test">
                     <div className="floatLeft">
-                      <Button outline color="danger" onClick={this.deleteClient}>Delete Client</Button>
+                      {
+                        this.state.loadingButtonDelete && <Button outline color="danger" className="px-4"><Spinner name="circle" color="#e74c3c" fadeIn="none" /></Button>
+                      }
+                      {
+                        !this.state.loadingButtonDelete && <Button outline color="danger" onClick={this.deleteClient}>Delete Client</Button>
+                      }
                     </div>
 
                     <Button color="secondary" className="floatRight" onClick={this.toggle}>Cancel</Button>
-                    <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>                  </div>
+
+                    {
+                      this.state.loadingButton && <Button color="primary" className="floatRight paddingRight"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                    }
+                    {
+                      !this.state.loadingButton && <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+                    }
+
+                  </div>
                 </ModalFooter>
               </Form>
             </Modal>
@@ -265,11 +284,24 @@ class TableRow extends Component {
               <ModalFooter>
                 <div className="test">
                   <div className="floatLeft">
-                    <Button outline color="danger" onClick={this.deleteEmployee}>Delete Employee</Button>
+                    {
+                      this.state.loadingButtonDelete && <Button outline color="danger" className="px-4"><Spinner name="circle" color="#e74c3c" fadeIn="none" /></Button>
+                    }
+                    {
+                      !this.state.loadingButtonDelete && <Button outline color="danger" onClick={this.deleteEmployee}>Delete Employee</Button>
+                    }
+
                   </div>
 
                   <Button color="secondary" className="floatRight" onClick={this.toggle}>Cancel</Button>
-                  <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+
+                  {
+                    this.state.loadingButton && <Button color="primary" className="floatRight paddingRight"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                  }
+                  {
+                    !this.state.loadingButton && <Button color="primary" type="submit" className="floatRight paddingRight">Save Changes</Button>
+                  }
+
                 </div>
               </ModalFooter>
             </Form>

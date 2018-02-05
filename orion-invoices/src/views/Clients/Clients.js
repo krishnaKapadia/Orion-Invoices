@@ -6,11 +6,10 @@ import {
   Row, Col, Card, CardHeader,  CardBody, Button, Table,
   Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label
 } from 'reactstrap';
-
+import Spinner from 'react-spinkit';
 // Error notification
 import { ToastContainer, toast } from 'react-toastify';
 import { css } from 'glamor';
-
 
 class Clients extends Component {
 
@@ -18,7 +17,7 @@ class Clients extends Component {
     super(props);
 
     this.state = {
-      clientCount: '', addClientModal: false, clients: []
+      clientCount: '', addClientModal: false, clients: [], loading: true, loadingButton: false
     };
 
     // Bindings
@@ -49,8 +48,9 @@ class Clients extends Component {
         clientCount++;
       });
 
-      this.setState({ clients, clientCount });
+      this.setState({ clients, clientCount, loading: false });
     }).catch( (err) => {
+      this.setState({ loading: false });
       if(err) toast.error("Could not get all Clients", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -89,7 +89,7 @@ class Clients extends Component {
       code: data.get("clientCode"), name: data.get("clientName"),
       address: data.get("clientAddress"), phone_num: data.get("clientPhone")
     }
-
+    this.setState({ loadingButton: true });
     // Perform axios POST operation
     axios.post("http://localhost:4000/api/v1/clients", newClient).then( (response) => {
       /**
@@ -100,13 +100,16 @@ class Clients extends Component {
       newClient.id = response.data.client._id;
 
       clients.push(newClient);
-      this.setState({ clients, clientCount: this.state.clientCount + 1 });
+      this.setState({ clients, clientCount: this.state.clientCount + 1, loadingButton: false });
+
+      // Dismisses the modal
+      this.toggle();
 
       toast.success("Client added!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
     }).catch((err) => {
-      // TODO show error to user in a notification window
+      this.setState({ loadingButton: false });
       if(err) {
         toast.error("Client could not be added!", {
           position: toast.POSITION.BOTTOM_RIGHT
@@ -149,6 +152,7 @@ class Clients extends Component {
    */
   handleSubmit(e) {
     e.preventDefault();
+
     // Serializes the form to give us an object containing the form's values
     // e.target.clientAddress = "Not Added";
     const data = new FormData(e.target);
@@ -165,113 +169,124 @@ class Clients extends Component {
 
     // Delates addition to addClient method
     this.addClient(data);
-
-    // Dismisses the modal
-    this.toggle();
   }
 
   render() {
-    return (
-      <div className="animated fadeIn">
-        {/* Error Toast notification */}
-        <ToastContainer />
+    if(this.state.loading) {
+      return(
+        <div className="animated fadeIn darken">
+          <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
+        </div>
+      );
+    }else{
+      return (
+        <div className="animated fadeIn">
+          {/* Error Toast notification */}
+          <ToastContainer />
 
-        <Row>
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+          <Row>
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
 
-            <Card>
-              <CardBody>
-                <h3><i className="icon-bubble blue paddingRight" /> Clients: {this.state.clientCount}</h3>
-              </CardBody>
-            </Card>
-          </Col>
+              <Card>
+                <CardBody>
+                  <h3><i className="icon-bubble blue paddingRight" /> Clients: {this.state.clientCount}</h3>
+                </CardBody>
+              </Card>
+            </Col>
 
-          <Col xs={{ size: 0 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            {/* EMPTY */}
-          </Col>
+            <Col xs={{ size: 0 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              {/* EMPTY */}
+            </Col>
 
-          <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
-            <Card>
-              <CardBody>
+            <Col xs={{ size: 12 }} md={{ size: 4 }} lg={{ size: 4 }}>
+              <Card>
+                <CardBody>
                   <Row>
                     <Col>
                       <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Client</Button>
                     </Col>
                   </Row>
+                </CardBody>
+              </Card>
+            </Col>
+
+          </Row>
+
+          <Card>
+            <CardHeader>
+              <i className="fa fa-align-justify"></i>Clients
+            </CardHeader>
+
+            <CardBody>
+              <Table hover responsive bordered>
+                <thead>
+                  <tr>
+                    <th>Client Code</th>
+                    <th>Client Name</th>
+                    <th>Address</th>
+                    <th>Phone Number</th>
+                    <th>Options</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {
+                    this.state.clients.map( (c) => (
+                      <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
+                        clientAddress={c.address} clientPhone={c.phone_num}
+                        deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
+                      ))
+                    }
+                  </tbody>
+                </Table>
               </CardBody>
             </Card>
-          </Col>
-
-        </Row>
-
-        <Card>
-          <CardHeader>
-            <i className="fa fa-align-justify"></i>Clients
-          </CardHeader>
-
-          <CardBody>
-            <Table hover responsive bordered>
-              <thead>
-                <tr>
-                  <th>Client Code</th>
-                  <th>Client Name</th>
-                  <th>Address</th>
-                  <th>Phone Number</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {
-                  this.state.clients.map( (c) => (
-                    <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
-                    clientAddress={c.address} clientPhone={c.phone_num}
-                    deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
-                  ))
-                }
-              </tbody>
-            </Table>
-          </CardBody>
-        </Card>
 
 
 
 
 
-        {/* Add client Modal */}
-        <Modal className="modal-primary" isOpen={this.state.addClientModal} toggle={this.toggle}>
-          <ModalHeader>Add new client</ModalHeader>
+            {/* Add client Modal */}
+            <Modal className="modal-primary" isOpen={this.state.addClientModal} toggle={this.toggle}>
+              <ModalHeader>Add new client</ModalHeader>
 
-          <Form onSubmit={this.handleSubmit}>
-            <ModalBody>
-              <FormGroup>
-                <Label>Client Code: </Label>
-                <Input type="text" name="clientCode" required />
-              </FormGroup>
-              <FormGroup>
-                <Label>Client Name: </Label>
-                <Input type="text" name="clientName" required />
-              </FormGroup>
-              <FormGroup>
-                <Label>Client Address: </Label>
-                <Input type="text" name="clientAddress" />
-              </FormGroup>
-              <FormGroup>
-                <Label>Client Phone: </Label>
-                <Input type="number" name="clientPhone" />
-              </FormGroup>
-            </ModalBody>
+              <Form onSubmit={this.handleSubmit}>
+                <ModalBody>
+                  <FormGroup>
+                    <Label>Client Code: </Label>
+                    <Input type="text" name="clientCode" required />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Client Name: </Label>
+                    <Input type="text" name="clientName" required />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Client Address: </Label>
+                    <Input type="text" name="clientAddress" />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Client Phone: </Label>
+                    <Input type="number" name="clientPhone" />
+                  </FormGroup>
+                </ModalBody>
 
-            <ModalFooter>
-              <Button color="primary" type="submit">Add</Button>
-              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-            </ModalFooter>
-          </Form>
+                <ModalFooter>
+                  {
+                    this.state.loadingButton &&  <Button color="primary" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                  }
+                  {
+                    !this.state.loadingButton &&  <Button color="primary" type="submit">Add</Button>
+                  }
 
-        </Modal>
+                  <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+                </ModalFooter>
+              </Form>
 
-      </div>
-    );
+            </Modal>
+
+          </div>
+        );
+    }
   }
 
 }

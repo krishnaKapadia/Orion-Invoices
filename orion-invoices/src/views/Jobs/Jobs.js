@@ -7,13 +7,9 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
-// import Spinner from '../../Components/Loading/Spinner';
 import Spinner from 'react-spinkit';
 
 class Jobs extends Component {
-
-  // TODO fetch all current orders from API on every page load.
-  // Later will implement redux to stop multiple pointless API requests by only needing the redux store and making redux post to the API
 
   constructor(props) {
     super(props);
@@ -112,24 +108,10 @@ class Jobs extends Component {
     this.setState({ orders, completedOrderCount });
   }
 
-  addOrder(data, items, date) {
-    var order = {
-      code: data.get("code"), clientName: data.get("clientName"),
-      orderlist: items,
-      created: date
-    }
-
-    var orders = this.state.orders;
-    orders.push(order);
-
-    this.setState( { orders });
-  }
-
   render() {
 
     if(this.state.loading) {
       return(
-        // TODO vertically center loading spinner
         <div className="animated fadeIn darken">
           <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
         </div>

@@ -5,6 +5,7 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import Spinner from 'react-spinkit';
 
 class TaskTable extends Component {
   /*
@@ -24,7 +25,8 @@ class TaskTable extends Component {
       tasks: [],
       taskCount: 0,
       newTaskToggle: false,
-      newTask: ""
+      newTask: "",
+      loading: true
     }
 
     this.removeTask     = this.removeTask.bind(this);
@@ -33,6 +35,7 @@ class TaskTable extends Component {
     this.setNewTask     = this.setNewTask.bind(this);
     this.saveTask       = this.saveTask.bind(this);
     this.getAllTasks    = this.getAllTasks.bind(this);
+    this.renderLoader   = this.renderLoader.bind(this);
   }
 
   componentWillMount() {
@@ -53,8 +56,9 @@ class TaskTable extends Component {
         });
       });
 
-      this.setState({ tasks });
+      this.setState({ tasks, loading: false });
     }).catch( (err) => {
+      this.setState({ loading: false });
       if(err) toast.error("Could not get all Tasks, please reload the page", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -135,7 +139,32 @@ class TaskTable extends Component {
     });
   }
 
+  /**
+  * Render loading spiner or tasks depending on loading state
+  */
+  renderLoader() {
+    if(this.state.loading){
+      return(
+        <tr colSpan="2">
+          <div className="taskLoadingContainer">  
+            <Spinner fadeIn='none' className="taskLoadingSpinner" name="three-bounce" color="#1abc9c" />
+          </div>
+        </tr>
+      );
+    }else{
+      return(
+        this.state.tasks.length > 0 ?
+        this.state.tasks.map( (task) => (
+          <Task key={task.id} id={task.id} desc={task.desc} removeTask={this.removeTask}/>
+        )) : <tr><td colSpan="2"><p className="centerText">No Tasks remaining</p></td></tr>
+
+
+      )
+    }
+  }
+
   render(){
+
     return(
       <div>
         <ToastContainer />
@@ -150,12 +179,7 @@ class TaskTable extends Component {
               </thead>
 
               <tbody>
-                {
-                  this.state.tasks.length > 0 ?
-                  this.state.tasks.map( (task) => (
-                    <Task key={task.id} id={task.id} desc={task.desc} removeTask={this.removeTask}/>
-                  )) : <tr><td colSpan="2"><p className="centerText">No Tasks remaining</p></td></tr>
-                }
+                { this.renderLoader() }
                 {
                   this.state.newTaskToggle === true &&
                     <tr>

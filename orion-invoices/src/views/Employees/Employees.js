@@ -5,13 +5,14 @@ Modal, ModalHeader, ModalBody, ModalFooter,
 Form, FormGroup, Input, Label } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
+import Spinner from 'react-spinkit';
 
 class Employees extends Component {
   constructor(props){
     super(props)
 
     this.state = {
-      addEmployeeModal: false, employees: [], totalEmployees: '1'
+      addEmployeeModal: false, employees: [], totalEmployees: '0', loading: true
     }
 
     this.toggle = this.toggle.bind(this);
@@ -44,8 +45,9 @@ class Employees extends Component {
         employeeCount++;
       });
 
-      this.setState({ employees, employeeCount });
+      this.setState({ employees, employeeCount, loading: false });
     }).catch( (err) => {
+      this.setState({ loading: false });
       if(err) toast.error("Could not get all Employees", {
         position: toast.POSITION.BOTTOM_RIGHT
       })
@@ -146,78 +148,85 @@ class Employees extends Component {
   }
 
   render() {
-    return (
-      <div className="animated fadeIn">
-        <ToastContainer />
+    if(this.state.loading) {
+      return(
+        <div className="animated fadeIn darken">
+          <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
+        </div>
+      );
+    }else {
+      return (
+        <div className="animated fadeIn">
+          <ToastContainer />
 
-        <Row>
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <CardBody>
-                <h3><i className="icon-people blue paddingRight" /> Employees: {this.state.employeeCount}</h3>
-              </CardBody>
-            </Card>
-          </Col>
+          <Row>
+            <Col xs="12" md="4" lg="4">
+              <Card>
+                <CardBody>
+                  <h3><i className="icon-people blue paddingRight" /> Employees: {this.state.employeeCount}</h3>
+                </CardBody>
+              </Card>
+            </Col>
 
-          <Col xs="0" md="4" lg="4">
-            {/* Empty */}
-          </Col>
+            <Col xs="0" md="4" lg="4">
+              {/* Empty */}
+            </Col>
 
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <CardBody>
-                <Row>
-                  <Col>
-                    <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Employee</Button>
-                  </Col>
-                </Row>
-              </CardBody>
-            </Card>
-          </Col>
+            <Col xs="12" md="4" lg="4">
+              <Card>
+                <CardBody>
+                  <Row>
+                    <Col>
+                      <Button className="fullWidthButton" color="primary" onClick={this.toggle}>Add Employee</Button>
+                    </Col>
+                  </Row>
+                </CardBody>
+              </Card>
+            </Col>
 
-        </Row>
+          </Row>
 
-        <Card>
-          <CardHeader>
-            <i className="fa fa-align-justify"></i>Employees
-          </CardHeader>
+          <Card>
+            <CardHeader>
+              <i className="fa fa-align-justify"></i>Employees
+            </CardHeader>
 
-          <CardBody>
-            <Table responsive hover bordered>
-              <thead>
-                <tr>
-                  <th>Code</th>
-                  <th>Employee Name</th>
-                  <th>Position</th>
-                  <th>Hourly Rate</th>
-                  <th>Phone Number</th>
-                  <th>Address</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
+            <CardBody>
+              <Table responsive hover bordered>
+                <thead>
+                  <tr>
+                    <th>Code</th>
+                    <th>Employee Name</th>
+                    <th>Position</th>
+                    <th>Hourly Rate</th>
+                    <th>Phone Number</th>
+                    <th>Address</th>
+                    <th>Options</th>
+                  </tr>
+                </thead>
 
-              <tbody>
-                {
-                  this.state.employees.map( (e) => (
-                    <TableRow key={e.id} type="employee" employeeId={e.id} employeeCode={e.code} employeeName={e.name}
-                    employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone_number}
-                    employeeAddress={e.address} deleteEmployeeFromState={this.deleteEmployee}
-                    updateEmployeeFromState={this.updateEmployee}
-                    />
-                  ))
-                }
-              </tbody>
-            </Table>
-          </CardBody>
-        </Card>
+                <tbody>
+                  {
+                    this.state.employees.map( (e) => (
+                      <TableRow key={e.id} type="employee" employeeId={e.id} employeeCode={e.code} employeeName={e.name}
+                        employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone_number}
+                        employeeAddress={e.address} deleteEmployeeFromState={this.deleteEmployee}
+                        updateEmployeeFromState={this.updateEmployee}
+                      />
+                    ))
+                  }
+                </tbody>
+              </Table>
+            </CardBody>
+          </Card>
 
 
 
-        <Modal className="modal-primary" isOpen={this.state.addEmployeeModal} toggle={this.toggle}>
-          <ModalHeader>Add New Employee</ModalHeader>
+          <Modal className="modal-primary" isOpen={this.state.addEmployeeModal} toggle={this.toggle}>
+            <ModalHeader>Add New Employee</ModalHeader>
 
-          <Form onSubmit={this.handleSubmit}>
-            <ModalBody>
+            <Form onSubmit={this.handleSubmit}>
+              <ModalBody>
                 <FormGroup>
                   <Label>Employee Code: </Label>
                   <Input type="text" name="employeeCode" />
@@ -248,17 +257,18 @@ class Employees extends Component {
                   <Input type="text" name="employeeAddress" />
                 </FormGroup>
 
-            </ModalBody>
+              </ModalBody>
 
-            <ModalFooter>
-              <Button color="primary" type="submit" >Add Employee</Button>
-              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-            </ModalFooter>
-          </Form>
-        </Modal>
+              <ModalFooter>
+                <Button color="primary" type="submit" >Add Employee</Button>
+                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+              </ModalFooter>
+            </Form>
+          </Modal>
 
-      </div>
-    );
+        </div>
+      );
+    }
   }
 
 }
