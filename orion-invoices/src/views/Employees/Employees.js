@@ -12,7 +12,7 @@ class Employees extends Component {
     super(props)
 
     this.state = {
-      addEmployeeModal: false, employees: [], totalEmployees: '0', loading: true
+      addEmployeeModal: false, employees: [], totalEmployees: '0', loading: true, loadingButton: false
     }
 
     this.toggle = this.toggle.bind(this);
@@ -64,6 +64,8 @@ class Employees extends Component {
       phone_number: data.get("employeePhone"), address: data.get("employeeAddress")
     }
 
+    this.setState({ loadingButton: true });
+
     // Perform axios POST operation to API
     axios.post("http://localhost:4000/api/v1/employees", newEmployee).then( (response) => {
       /**
@@ -74,13 +76,17 @@ class Employees extends Component {
       newEmployee.id = response.data.employee._id;
 
       employees.push(newEmployee);
-      this.setState({ employees, employeeCount: this.state.employeeCount + 1 });
+      this.setState({ employees, employeeCount: this.state.employeeCount + 1, loadingButton: false });
+
+      // Dismisses the modal
+      this.toggle();
 
       toast.success("Employee added!", {
         position: toast.POSITION.BOTTOM_RIGHT
       });
     }).catch( (err) => {
       if(err) {
+        this.setState({ loadingButton: false });
         toast.error("Employee could not be added! Please try again" + err, {
           position: toast.POSITION.BOTTOM_RIGHT
         });
@@ -134,8 +140,6 @@ class Employees extends Component {
 
     this.addEmployee(data);
 
-    // Dismisses the modal
-    this.toggle();
   }
 
   /*
@@ -260,7 +264,12 @@ class Employees extends Component {
               </ModalBody>
 
               <ModalFooter>
-                <Button color="primary" type="submit" >Add Employee</Button>
+                {
+                  this.state.loadingButton &&  <Button color="primary" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                }
+                {
+                  !this.state.loadingButton &&  <Button color="primary" type="submit">Add Employee</Button>
+                }
                 <Button color="secondary" onClick={this.toggle}>Cancel</Button>
               </ModalFooter>
             </Form>
