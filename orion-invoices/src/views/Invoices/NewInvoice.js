@@ -238,7 +238,7 @@ class NewInvoice extends Component {
   render() {
     /**
     * If the state prop is passed then view only mode is shown,
-    * otherwise show empty invocie that is editable
+    * otherwise show empty invoice that is editable
     */
     if(typeof this.props.location.state !== "undefined") {
       const data = this.props.location.state.invoice;

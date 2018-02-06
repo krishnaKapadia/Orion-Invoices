@@ -236,7 +236,12 @@ class Order extends Component {
               <ModalFooter>
                 <div className="test">
                   <div className="floatLeft">
-                    <Button outline color="danger" onClick={this.deleteOrder}>Delete Order</Button>
+                    {
+                      this.state.loadingButtonDelete && <Button outline color="danger" className="px-4"><Spinner name="circle" color="#e74c3c" fadeIn="none" /></Button>
+                    }
+                    {
+                      !this.state.loadingButtonDelete && <Button outline color="danger" onClick={this.deleteOrder}>Delete Order</Button>
+                    }
                   </div>
 
                   <Button color="secondary" className="floatRight" onClick={this.toggleEdit}>Cancel</Button>

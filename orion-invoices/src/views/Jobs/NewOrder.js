@@ -4,6 +4,9 @@ import 'react-select/dist/react-select.css';
 import { Row, Col, Card, CardHeader, CardBody, CardFooter,
   Form, FormGroup, Label, Input, Button, Table } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import Spinner from 'react-spinkit';
+import axios from 'axios';
 
 class NewOrder extends Component {
 
@@ -34,7 +37,8 @@ class NewOrder extends Component {
     this.state = {
       clientName: "",
       itemCount: 0,
-      items: []
+      items: [],
+      loadingButton: false
     }
 
     // Bindings
@@ -48,6 +52,9 @@ class NewOrder extends Component {
     this.addItem();
   }
 
+  /**
+  * Adds a empty item row to the order
+  */
   addItem() {
     // Adds new empty item row to the order
     var items = this.state.items;
@@ -63,10 +70,10 @@ class NewOrder extends Component {
     this.setState( { items, itemCount } );
   }
 
-  // Removes the last item row in the order
+  /**
+  * Removes the last item row in the order
+  */
   removeItem() {
-    console.log("DANK");
-
     var items = this.state.items;
 
     if(items.length > 1){
@@ -77,55 +84,92 @@ class NewOrder extends Component {
     }
   }
 
-  // Sets the clients name state
+  /**
+  * Sets the clients name state
+  */
   setClientName(e) {
     var clientName = this.state.clientName;
     clientName = e.target.value;
     this.setState( { clientName } );
-    console.log(this.state);
   }
 
-  // Sets the particular item desc
+  /**
+  * Sets the particular item desc
+  */
   setItemDesc(id, e) {
     var desc = e.target.value;
     var items = this.state.items;
     items[id].desc = desc;
     this.setState({ items })
-    console.log(this.state.items);
   }
 
-  // Sets the particular items quantity
+  /**
+  * Sets the particular items quantity
+  */
   setItemQuantity(id, e) {
     var quantity = e.target.value;
     var items = this.state.items;
     items[id].quantity = quantity;
     this.setState({ items })
-    console.log(this.state.items);
   }
 
-  // Sets the particular items cost
+  /**
+  * Sets the particular items cost
+  */
   setItemCost(id, e) {
     var cost = e.target.value;
     var items = this.state.items;
     items[id].cost = cost;
     this.setState({ items })
-    console.log(this.state.items);
   }
 
-  // Submits the order to the API
-  submitOrderToAPI() {
-    // TODO wire up when backend API is completed
-    console.log("WIRE UP THE SUBMIT ORDER TO API");
+  /**
+  * Submits the order to the API
+  */
+  submitOrderToAPI(e) {
+    e.preventDefault();
+
+    this.setState({ loadingButton: true });
+    var data = this.state;
+    var items = [];
+
+    data.items.map((d) => {
+      items.push({
+        desc: d.desc, quantity: d.quantity, price: parseFloat(d.cost)
+      });
+    });
+
+    var newOrder = {
+      client_name: data.clientName, items: items
+    }
+
+    var props = this.props;
+
+    // Post to API via axios
+    // console.log(newOrder);
+    axios.post("http://localhost:4000/api/v1/orders", newOrder).then( (response) => {
+      this.setState({ loadingButton: false });
+      props.history.push('/orders');
+    }).catch( (err) => {
+      if(err) {
+        this.setState({ loadingButton: false });
+        toast.error("Order could not be added! Please try again" + err, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        });
+      }
+    })
+
   }
 
   render() {
     return (
       <div className="animated fadeIn">
+        <ToastContainer />
         <Row>
           <Col xs="12" md="12" lg="12">
             <Card>
               <CardHeader>New Order</CardHeader>
-              <Form>
+              <Form onSubmit={this.submitOrderToAPI}>
 
                 <CardBody>
                     <FormGroup>
@@ -138,7 +182,7 @@ class NewOrder extends Component {
                           ]}
                         /> */}
 
-                      <Input type="text" id="clientName" placeholder="Enter the clients name" onChange={this.setClientName} />
+                      <Input required type="text" id="clientName" placeholder="Enter the clients name" onChange={this.setClientName} />
                     </FormGroup>
                     <br />
                     <Label htmlFor="orderlist"><h4>Order List:</h4></Label>
@@ -164,15 +208,15 @@ class NewOrder extends Component {
                           this.state.items.map( (i) => (
                             <Row key={i.key} className="topButton">
                               <Col>
-                                <Input key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" id="itemDescription" name="name" placeholder="Desc" />
+                                <Input required key={i.key} onChange={(e) => this.setItemDesc(i.key, e)} type="text" id="itemDescription" name="name" placeholder="Desc" />
                               </Col>
 
                               <Col>
-                                <Input key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" id="itemQuantity" name="quantity" placeholder="Quantity" />
+                                <Input required key={i.key} onChange={(e) => this.setItemQuantity(i.key, e)} type="number" id="itemQuantity" name="quantity" placeholder="Quantity" />
                               </Col>
 
                               <Col>
-                                <Input key={i.key} onChange={(e) => this.setItemCost(i.key, e)} type="number" step="0.01" id="itemQuantity" name="cost" placeholder="Cost Per Unit" />
+                                <Input required key={i.key} onChange={(e) => this.setItemCost(i.key, e)} type="number" step="0.01" id="itemCost" name="cost" placeholder="Cost Per Unit" />
                               </Col>
                             </Row>
                           ))
@@ -194,9 +238,14 @@ class NewOrder extends Component {
                 </CardBody>
 
                 <CardFooter>
-                    <NavLink to="/orders">
-                      <Button onClick={this.submitOrderToAPI} size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
-                    </NavLink>
+                    {/* <NavLink to="/orders"> */}
+                    {
+                      this.state.loadingButton &&  <Button color="primary" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                    }
+                    {
+                      !this.state.loadingButton &&  <Button type="submit" size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
+                    }
+                    {/* </NavLink> */}
 
                     <NavLink to="/orders">
                       <Button className="paddingLeft" type="reset" size="md" color="danger"><i className="fa fa-ban"></i> Cancel Order</Button>
