@@ -149,7 +149,7 @@ class Order extends Component {
 
   render() {
     const data = this.props.data;
-    var count = 0;
+    var count = -1;
 
     return (
       <tr>
@@ -213,6 +213,7 @@ class Order extends Component {
                     <tbody>
                       {
                         data.items.map( (item) => {
+                          count++
                           return(
                             <tr key={item._id}>
                               <td><Input onChange={(e) => this.setItemDesc(count, e)} name="itemDesc" type="text" defaultValue={item.desc} /></td>
@@ -220,7 +221,6 @@ class Order extends Component {
                               <td><Input onChange={(e) => this.setItemCost(count, e)} name="itemCost" type="number" step="0.01" defaultValue={item.price} /></td>
                             </tr>
                           )
-                          count++
                         })
                       }
                     </tbody>
