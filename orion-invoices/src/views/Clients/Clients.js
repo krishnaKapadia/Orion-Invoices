@@ -4,7 +4,8 @@ import TableRow from "../../components/Table/TableRow";
 import AddClientModal from "../../components/Modals/AddClientModal";
 import {
   Row, Col, Card, CardHeader,  CardBody, Button, Table,
-  Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label
+  Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label,
+  InputGroup, InputGroupAddon
 } from 'reactstrap';
 import Spinner from 'react-spinkit';
 // Error notification
@@ -17,7 +18,7 @@ class Clients extends Component {
     super(props);
 
     this.state = {
-      clientCount: '', addClientModal: false, clients: [], loading: true, loadingButton: false
+      clientCount: '', addClientModal: false, clients: [], search: '', loading: true, loadingButton: false
     };
 
     // Bindings
@@ -27,6 +28,7 @@ class Clients extends Component {
     this.updateClient = this.updateClient.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.getAllClients = this.getAllClients.bind(this);
+    this.setSearch = this.setSearch.bind(this);
   }
 
   componentDidMount() {
@@ -171,7 +173,16 @@ class Clients extends Component {
     this.addClient(data);
   }
 
+  /**
+  * Sets the search term
+  */
+  setSearch(e) {
+    this.setState({ search: e.target.value });
+  }
+
   render() {
+    var searchTerm = this.state.search;
+
     if(this.state.loading) {
       return(
         <div className="animated fadeIn darken">
@@ -214,7 +225,17 @@ class Clients extends Component {
 
           <Card>
             <CardHeader>
-              <i className="fa fa-align-justify"></i>Clients
+              <Row>
+                <Col xs="12" md="10" lg="10">
+                  <i className="fa fa-align-justify"></i> Clients
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <InputGroupAddon addontype="prepend"><i className="fa fa-search"></i></InputGroupAddon>
+                    <Input placeholder="Client name" onChange={this.setSearch} />
+                  </InputGroup>
+                </Col>
+              </Row>
             </CardHeader>
 
             <CardBody>
@@ -231,19 +252,28 @@ class Clients extends Component {
 
                 <tbody>
                   {
+                    this.state.search == '' &&
                     this.state.clients.map( (c) => (
                       <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
                         clientAddress={c.address} clientPhone={c.phone_num}
                         deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
                       ))
-                    }
+                  }
+                  {
+                    this.state.search != '' &&
+                    this.state.clients.filter((client) => {
+                      console.log(client);
+                      return client.name.includes(searchTerm);
+                    }).map( (c) => (
+                      <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
+                        clientAddress={c.address} clientPhone={c.phone_num}
+                        deleteClientFromState={this.deleteClient} updateClientFromState={this.updateClient}/>
+                    ))
+                  }
                   </tbody>
                 </Table>
               </CardBody>
             </Card>
-
-
-
 
 
             {/* Add client Modal */}

@@ -38,7 +38,7 @@ class TaskTable extends Component {
     this.renderLoader   = this.renderLoader.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAllTasks();
   }
 
@@ -146,7 +146,7 @@ class TaskTable extends Component {
     if(this.state.loading){
       return(
         <tr colSpan="2">
-          <div className="taskLoadingContainer">  
+          <div className="taskLoadingContainer">
             <Spinner fadeIn='none' className="taskLoadingSpinner" name="three-bounce" color="#1abc9c" />
           </div>
         </tr>
