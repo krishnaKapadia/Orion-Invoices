@@ -29,7 +29,7 @@ class Clients extends Component {
     this.getAllClients = this.getAllClients.bind(this);
   }
 
-  componentWillMount() {
+  componentDidMount() {
     this.getAllClients();
   }
 

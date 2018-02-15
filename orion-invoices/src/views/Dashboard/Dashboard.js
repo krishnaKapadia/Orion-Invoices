@@ -11,67 +11,117 @@ import {
   CardFooter,
   Table,
 } from 'reactstrap';
+import axios from 'axios';
+import Spinner from 'react-spinkit';
 
 class Dashboard extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      clientSize: 0,
+      invoiceSize: 0,
+      orderSize: 0,
+      loading: true
+    }
+
+    this.getDataSizes = this.getDataSizes.bind(this);
+  }
+
+  componentDidMount() {
+    this.getDataSizes();
+  }
+
+  /**
+  * Gets the lengths of clients, invoices and orders array from api
+  */
+  getDataSizes() {
+    var clientSize = 0;
+    var invoiceSize = 0;
+    var orderSize = 0;
+
+    axios.all([
+      axios.get('http://localhost:4000/api/v1/clients'),
+      axios.get('http://localhost:4000/api/v1/invoices'),
+      axios.get('http://localhost:4000/api/v1/orders')
+    ]).then(axios.spread( (clients, invoices, orders) => {
+      clientSize = clients.data.clients.length;
+      invoiceSize = invoices.data.invoices.length;
+      orderSize = orders.data.orders.length;
+
+      this.setState({ clientSize, invoiceSize, orderSize, loading: false });
+    })).catch( (err) => {
+      console.log(err);
+    })
+  }
+
   render() {
-    return (
-      <div className="animated fadeIn">
+    if(this.state.loading) {
+      return(
+        <div className="animated fadeIn darken">
+          <Spinner fadeIn='none' className="loadingSpinner" name="folding-cube" color="#1abc9c" />
+        </div>
+      );
+    }else{
+      return (
+        <div className="animated fadeIn">
 
-        <Row>
-          {/* <Col xs="12" md="3" lg="3">
-            <Card class="cardButton">
-              <CardBody>
-                <h2><i className="icon-people blue paddingRight" /> New Invoice</h2>
-              </CardBody>
-            </Card>
-          </Col> */}
-
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <NavLink to="/clients" className="linkCard">
+          <Row>
+            {/* <Col xs="12" md="3" lg="3">
+              <Card class="cardButton">
                 <CardBody>
-                  <h2><i className="icon-people blue paddingRight" /> Clients: 200</h2>
+                  <h2><i className="icon-people blue paddingRight" /> New Invoice</h2>
                 </CardBody>
-              </NavLink>
-            </Card>
-          </Col>
+              </Card>
+            </Col> */}
 
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <NavLink to="/invoices" className="linkCard">
-                <CardBody>
-                  <h2><i className="icon-docs blue paddingRight" /> Invoices : 2</h2>
-                </CardBody>
-              </NavLink>
-            </Card>
-          </Col>
+            <Col xs="12" md="4" lg="4">
+              <Card>
+                <NavLink to="/clients" className="linkCard">
+                  <CardBody className="dataLoadingContainer">
+                    <h2><i className="icon-people blue paddingRight" /> Clients: {this.state.clientSize}</h2>
+                  </CardBody>
+                </NavLink>
+              </Card>
+            </Col>
 
-          <Col xs="12" md="4" lg="4">
-            <Card>
-              <NavLink to="/orders" className="linkCard">  
-                <CardBody>
-                  <h2><i className="icon-drawer blue paddingRight" /> Orders: 10</h2>
-                </CardBody>
-              </NavLink>
-            </Card>
-          </Col>
+            <Col xs="12" md="4" lg="4">
+              <Card>
+                <NavLink to="/invoices" className="linkCard">
+                  <CardBody>
+                    <h2><i className="icon-docs blue paddingRight" /> Invoices : {this.state.invoiceSize}</h2>
+                  </CardBody>
+                </NavLink>
+              </Card>
+            </Col>
 
-        </Row>
+            <Col xs="12" md="4" lg="4">
+              <Card>
+                <NavLink to="/orders" className="linkCard">
+                  <CardBody>
+                    <h2><i className="icon-drawer blue paddingRight" /> Orders: {this.state.orderSize}</h2>
+                  </CardBody>
+                </NavLink>
+              </Card>
+            </Col>
 
-        <Row>
-          <Col xs="12" md="8" lg="8">
-            {/* Graph of the number of jobs/orders completed per day, for 30 days */}
-            <LineGraph />
-          </Col>
+          </Row>
 
-          <Col xs="12" md="4" lg="4">
-            <TaskTable />
-          </Col>
-        </Row>
+          <Row>
+            <Col xs="12" md="8" lg="8">
+              {/* Graph of the number of jobs/orders completed per day, for 30 days */}
+              <LineGraph />
+            </Col>
 
-      </div>
-    )
+            <Col xs="12" md="4" lg="4">
+              <TaskTable />
+            </Col>
+          </Row>
+
+        </div>
+      )
+    }
   }
 }
 
