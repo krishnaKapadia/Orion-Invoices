@@ -3,7 +3,7 @@ import Order from '../../components/Table/Order';
 import { NavLink } from 'react-router-dom';
 import {
   Card, CardHeader, CardBody, Row, Col, Button,
-  Table
+  Table, Input, InputGroup, InputGroupAddon
 } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,13 +15,15 @@ class Jobs extends Component {
     super(props);
 
     this.state = {
-      orders: [], currentOrderCount: 0, completedOrderCount: 0, loading: true
+      orders: [], currentOrderCount: 0, completedOrderCount: 0,
+      loading: true, search: ''
     }
 
-    this.getAllOrders = this.getAllOrders.bind(this);
-    this.deleteOrderFromState = this.deleteOrderFromState.bind(this);
+    this.setSearch = this.setSearch.bind(this);
     this.updateOrder = this.updateOrder.bind(this);
+    this.getAllOrders = this.getAllOrders.bind(this);
     this.toggleCompleted = this.toggleCompleted.bind(this);
+    this.deleteOrderFromState = this.deleteOrderFromState.bind(this);
   }
 
   componentDidMount() {
@@ -108,7 +110,15 @@ class Jobs extends Component {
     this.setState({ orders, completedOrderCount });
   }
 
+  /**
+  * Sets the search term
+  */
+  setSearch(e) {
+    this.setState({ search: e.target.value });
+  }
+
   render() {
+    var searchTerm = this.state.search.toLowerCase();
 
     if(this.state.loading) {
       return(
@@ -150,12 +160,21 @@ class Jobs extends Component {
 
         <Card>
           <CardHeader>
-            <i className="fa fa-align-justify"></i>Orders
+            <Row>
+              <Col xs="12" md="10" lg="10">
+                <i className="fa fa-align-justify"></i> Orders
+              </Col>
+              <Col>
+                <InputGroup>
+                  <Input placeholder="Search..." onChange={this.setSearch} />
+                  <InputGroupAddon addontype="append"><i className="fa fa-search"></i></InputGroupAddon>
+                </InputGroup>
+              </Col>
+            </Row>
           </CardHeader>
 
           <CardBody>
             {/* add, responsive prop to tag to make the table responsive */}
-
 
             <Table bordered>
               <thead>
@@ -168,8 +187,33 @@ class Jobs extends Component {
               </thead>
 
               <tbody>
-                {
+                {/* If no search term is inputted display all stored data */}
+                { this.state.search == '' &&
                   this.state.orders.map( (o) => {
+                    return(
+                      <Order key={o._id} type="order" data={o} toggleCompleted={this.toggleCompleted} updateOrder={this.updateOrder} deleteOrderFromState={this.deleteOrderFromState} />
+                    )
+                  })
+                }
+
+                {/* Display only if search term has been inputted */}
+                { this.state.search != '' &&
+                  // Filters by the given search term therefore real time searching without having to query the api again
+                  this.state.orders.filter( (o) => {
+                    return (
+                      // Checks search term against all colum values to allow for more flexible searches
+                      o.client_name.toLowerCase().includes(searchTerm) ||
+                      o.created.includes(searchTerm)
+                      // ( o.completed && searchTerm == 'completed' )
+                    )
+                  }).map( (o) => {
+                    // console.log(o);
+                    // if(o.client_name == '' && o.created == '') return (
+                    //   <tr colSpan="4">
+                    //     <td>No Search Results</td>
+                    //   </tr>
+                    // )
+                    // else
                     return(
                       <Order key={o._id} type="order" data={o} toggleCompleted={this.toggleCompleted} updateOrder={this.updateOrder} deleteOrderFromState={this.deleteOrderFromState} />
                     )

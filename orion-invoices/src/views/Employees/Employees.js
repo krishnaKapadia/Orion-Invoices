@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import TableRow from "../../components/Table/TableRow";
 import { Table, Row, Col, Card, CardHeader, CardBody, Button,
 Modal, ModalHeader, ModalBody, ModalFooter,
-Form, FormGroup, Input, Label } from 'reactstrap';
+Form, FormGroup, Input, InputGroup, InputGroupAddon, Label } from 'reactstrap';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import Spinner from 'react-spinkit';
@@ -12,10 +12,12 @@ class Employees extends Component {
     super(props)
 
     this.state = {
-      addEmployeeModal: false, employees: [], totalEmployees: '0', loading: true, loadingButton: false
+      addEmployeeModal: false, employees: [], totalEmployees: '0',
+      loading: true, loadingButton: false, search: ''
     }
 
     this.toggle = this.toggle.bind(this);
+    this.setSearch = this.setSearch.bind(this);
     this.addEmployee = this.addEmployee.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.deleteEmployee = this.deleteEmployee.bind(this);
@@ -151,7 +153,16 @@ class Employees extends Component {
     })
   }
 
+  /**
+  * Sets the search term
+  */
+  setSearch(e) {
+    this.setState({ search: e.target.value });
+  }
+
   render() {
+    var searchTerm = this.state.search.toLowerCase();
+
     if(this.state.loading) {
       return(
         <div className="animated fadeIn darken">
@@ -192,7 +203,17 @@ class Employees extends Component {
 
           <Card>
             <CardHeader>
-              <i className="fa fa-align-justify"></i>Employees
+              <Row>
+                <Col xs="12" md="10" lg="10">
+                  <i className="fa fa-align-justify"></i> Employees
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <Input placeholder="Search..." onChange={this.setSearch} />
+                    <InputGroupAddon addontype="append"><i className="fa fa-search"></i></InputGroupAddon>
+                  </InputGroup>
+                </Col>
+              </Row>
             </CardHeader>
 
             <CardBody>
@@ -210,7 +231,9 @@ class Employees extends Component {
                 </thead>
 
                 <tbody>
+                  {/* If no search term is inputted display all stored data */}
                   {
+                    this.state.search == '' &&
                     this.state.employees.map( (e) => (
                       <TableRow key={e.id} type="employee" employeeId={e.id} employeeCode={e.code} employeeName={e.name}
                         employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone_number}
@@ -219,6 +242,29 @@ class Employees extends Component {
                       />
                     ))
                   }
+
+                  {/* Display only if search term has been inputted */}
+                  { this.state.search != '' &&
+                    // Filters by the given search term therefore real time searching without having to query the api again
+                    this.state.employees.filter((e) => {
+                      return (
+                        // Checks search term against all colum values to allow for more flexible searches
+                        e.code.toLowerCase().includes(searchTerm) ||
+                        e.name.toLowerCase().includes(searchTerm) ||
+                        e.position.toLowerCase().includes(searchTerm) ||
+                        e.address.toLowerCase().includes(searchTerm) ||
+                        e.rate.includes(searchTerm) ||
+                        e.phone_number.includes(searchTerm)
+                      )
+                    }).map( (e) => (
+                      <TableRow key={e.id} type="employee" employeeId={e.id} employeeCode={e.code} employeeName={e.name}
+                        employeePosition={e.position} employeeRate={e.rate} employeePhoneNumber={e.phone_number}
+                        employeeAddress={e.address} deleteEmployeeFromState={this.deleteEmployee}
+                        updateEmployeeFromState={this.updateEmployee}
+                      />
+                    ))
+                  }
+
                 </tbody>
               </Table>
             </CardBody>

@@ -81,8 +81,6 @@ class Clients extends Component {
     this.setState({ addClientModal: !this.state.addClientModal });
   }
 
-  // Adds to list of clients, given a FormData object
-
   /**
    * POSTS a new client to the API. Needs a FormData Object
    */
@@ -181,7 +179,7 @@ class Clients extends Component {
   }
 
   render() {
-    var searchTerm = this.state.search;
+    var searchTerm = this.state.search.toLowerCase();
 
     if(this.state.loading) {
       return(
@@ -231,8 +229,8 @@ class Clients extends Component {
                 </Col>
                 <Col>
                   <InputGroup>
-                    <InputGroupAddon addontype="prepend"><i className="fa fa-search"></i></InputGroupAddon>
-                    <Input placeholder="Client name" onChange={this.setSearch} />
+                    <Input placeholder="Search..." onChange={this.setSearch} />
+                    <InputGroupAddon addontype="append"><i className="fa fa-search"></i></InputGroupAddon>
                   </InputGroup>
                 </Col>
               </Row>
@@ -251,6 +249,7 @@ class Clients extends Component {
                 </thead>
 
                 <tbody>
+                  {/* If no search term is inputted display all stored data */}
                   {
                     this.state.search == '' &&
                     this.state.clients.map( (c) => (
@@ -261,9 +260,15 @@ class Clients extends Component {
                   }
                   {
                     this.state.search != '' &&
+                    // Filters by the given search term therefore real time searching without having to query the api again
                     this.state.clients.filter((client) => {
-                      console.log(client);
-                      return client.name.includes(searchTerm);
+                      return (
+                        // Checks search term against all colum values to allow for more flexible searches
+                        client.name.toLowerCase().includes(searchTerm) ||
+                        client.code.toLowerCase().includes(searchTerm) ||
+                        client.address.toLowerCase().includes(searchTerm) ||
+                        client.phone_num.includes(searchTerm)
+                      )
                     }).map( (c) => (
                       <TableRow key={c.id} type="client" clientId={c.id} clientCode={c.code} clientName={c.name}
                         clientAddress={c.address} clientPhone={c.phone_num}

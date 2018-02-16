@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import TableRow from "../../components/Table/TableRow";
 import {
   Row, Col, Card, CardHeader,  CardBody, Button, Table,
-  Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label
+  Modal, ModalHeader, ModalBody, ModalFooter, Form, Input, FormGroup, Label,
+  InputGroup, InputGroupAddon
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
@@ -13,10 +14,10 @@ class Invoices extends Component {
     super(props);
 
     this.state = {
-      invoices: [], invoiceCount: 0, loading: true
+      invoices: [], invoiceCount: 0, loading: true, search: ''
     }
 
-    // this.addInvoice = this.addInvoice.bind(this);
+    this.setSearch = this.setSearch.bind(this);
     this.getAllInvoices = this.getAllInvoices.bind(this);
   }
 
@@ -55,7 +56,17 @@ class Invoices extends Component {
     });
   }
 
+  /**
+  * Sets the search term
+  */
+  setSearch(e) {
+    console.log(e.target.value);
+    this.setState({ search: e.target.value });
+  }
+
   render() {
+    var searchTerm = this.state.search.toLowerCase();
+
     if(this.state.loading) {
       return(
         <div className="animated fadeIn darken">
@@ -101,7 +112,17 @@ class Invoices extends Component {
 
           <Card>
             <CardHeader>
-              <i className="fa fa-align-justify"></i>Invoices
+              <Row>
+                <Col xs="12" md="10" lg="10">
+                  <i className="fa fa-align-justify"></i> Invoices
+                </Col>
+                <Col>
+                  <InputGroup>
+                    <Input placeholder="Search..." onChange={this.setSearch} />
+                    <InputGroupAddon addontype="append"><i className="fa fa-search"></i></InputGroupAddon>
+                  </InputGroup>
+                </Col>
+              </Row>
             </CardHeader>
 
             <CardBody>
@@ -117,8 +138,26 @@ class Invoices extends Component {
                 </thead>
 
                 <tbody>
-                  {
+                  {/* If no search term is inputted display all stored data */}
+                  { this.state.search == '' &&
                     this.state.invoices.map( (e) => {
+                      return(
+                        <TableRow key={e._id} type="invoice" data={e} togglePaid={this.togglePaid}/>
+                      )
+                    })
+                  }
+
+                  {/* Display only if search term has been inputted */}
+                  { this.state.search != '' &&
+                    // Filters by the given search term therefore real time searching without having to query the api again
+                    this.state.invoices.filter( (i) => {
+                      return (
+                        // Checks search term against all colum values to allow for more flexible searches
+                        String(i.inv_number).includes(searchTerm) ||
+                        i.client_name.toLowerCase().includes(searchTerm) ||
+                        i.date.includes(searchTerm)
+                      )
+                    }).map( (e) => {
                       return(
                         <TableRow key={e._id} type="invoice" data={e} togglePaid={this.togglePaid}/>
                       )
