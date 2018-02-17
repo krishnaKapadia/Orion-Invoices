@@ -20,21 +20,23 @@ class Register extends Component {
   }
 
   /**
-  * Registers entered user credentials with backend API
+  * Registers entered user credentials with backend API by first creating a Company
   */
   register(data) {
     const userCredentials = {
+      name: data.get("company"),
       username: data.get("username"),
       password: data.get("password"),
       email: data.get("email")
     }
 
-    axios.post("http://localhost:4000/api/v1/users", userCredentials).then((response) => {
+    axios.post("http://localhost:4000/api/v1/companies", userCredentials).then((response) => {
       if(response.data.result) {
 
         this.props.setLogin(true);
 
         console.log(this.props.isLoggedIn);
+        console.log(response.data);
 
         // redirect to dashboard
          this.props.history.push("/dashboard");
@@ -78,6 +80,10 @@ class Register extends Component {
                     <p className="text-muted">Create your account</p>
 
                     <Form onSubmit={this.handleSubmit}>
+                      <InputGroup className="mb-3">
+                        <InputGroupAddon><i className="icon-rocket"></i></InputGroupAddon>
+                        <Input type="text" placeholder="Company name" name="company" required />
+                      </InputGroup>
                       <InputGroup className="mb-3">
                         <InputGroupAddon>@</InputGroupAddon>
                         <Input type="text" placeholder="Email" name="email" required />

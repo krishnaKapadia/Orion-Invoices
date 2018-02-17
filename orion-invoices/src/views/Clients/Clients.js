@@ -18,7 +18,8 @@ class Clients extends Component {
     super(props);
 
     this.state = {
-      clientCount: '', addClientModal: false, clients: [], search: '', loading: true, loadingButton: false
+      clientCount: '', addClientModal: false, clients: [], search: '',
+      loading: true, loadingButton: false
     };
 
     // Bindings
@@ -111,7 +112,8 @@ class Clients extends Component {
     }).catch((err) => {
       this.setState({ loadingButton: false });
       if(err) {
-        toast.error("Client could not be added!", {
+        console.log(err);
+        toast.error("Client could not be added! " + err.response.data.error, {
           position: toast.POSITION.BOTTOM_RIGHT
         });
       }
