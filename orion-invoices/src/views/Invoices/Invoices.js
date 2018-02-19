@@ -33,12 +33,15 @@ class Invoices extends Component {
     axios.get("http://localhost:4000/api/v1/invoices").then( (data) => {
       var invoices = [];
       var invoiceCount = 0;
+      // var inv_number = 0;
 
       data.data.invoices.map( (invoice) => {
         var date = new Date(invoice.date);
         date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
         invoice.date = date;
-
+        // TODO: SEND COMPANY_ID WITH REQ HEADER
+        // // Finds if the invoice_number is the most recent, i.e the largest so far
+        // inv_number = invoice.inv_number > inv_number ? invoice.inv_number : inv_number;
         invoices.push(
           invoice
           // id: invoice._id, inv_number: invoice.inv_number,

@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {
   Container, Row, Col, CardGroup, Card, CardBody, Button, Input,
-  InputGroup, InputGroupAddon, Form}
-from 'reactstrap';
+  InputGroup, InputGroupAddon, Form
+} from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setLogin } from '../../Redux/Actions/index';
+import { setLogin, setCurrentUserCredentials } from '../../Redux/Actions/index';
 import { ToastContainer, toast } from 'react-toastify';
-
+import Spinner from 'react-spinkit';
 import axios from 'axios';
 
 class Register extends Component {
@@ -15,8 +15,12 @@ class Register extends Component {
   constructor(props) {
     super(props);
 
-    this.handleSubmit      = this.handleSubmit.bind(this);
+    this.state = {
+      loading: false
+    }
+
     this.register = this.register.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   /**
@@ -32,25 +36,29 @@ class Register extends Component {
 
     axios.post("http://localhost:4000/api/v1/companies", userCredentials).then((response) => {
       if(response.data.result) {
-
+        console.log(response.data.data);
+        this.props.setCurrentUserCredentials(response.data.data);
         this.props.setLogin(true);
 
-        console.log(this.props.isLoggedIn);
-        console.log(response.data);
 
+        // TODO redirection and toast is not working!!!!!!!!!!
         // redirect to dashboard
          this.props.history.push("/dashboard");
 
-         toast.success("User registered! Welcome to Orion invoices", {
+        // TODO put the company_id to every header request using: axios.defaults.headers.common['Auth-Token'] = 'foo bar';
+
+         toast.success("Company registered! Welcome to Orion invoices", {
            position: toast.POSITION.BOTTOM_RIGHT
          });
       }
     }).catch((err) => {
-      console.log(err);
-      if(err) toast.error(err + " Could not register, please try again", {
-        position: toast.POSITION.BOTTOM_RIGHT
-      })
-    })
+      if(err) {
+        this.setState({ loading: false });
+        toast.error("Could not register, please try again, " + err.response.data.error, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        });
+      }
+    });
   }
 
   /**
@@ -58,6 +66,9 @@ class Register extends Component {
   */
   handleSubmit(e) {
     e.preventDefault();
+
+    // Set loading state to true
+    this.setState({ loading: true });
 
     // Create object from form data
     const data = new FormData(e.target);
@@ -106,7 +117,12 @@ class Register extends Component {
 
                       <Row>
                         <Col xs="6">
-                          <Button color="success" block>Create Account</Button>
+                          {
+                            this.state.loading &&  <Button color="success" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
+                          }
+                          {
+                            !this.state.loading && <Button type="submit" color="success" block>Create Account</Button>
+                          }
                           {/* <Button type="submit" color="primary" className="px-4">Login</Button> */}
                         </Col>
 
@@ -140,7 +156,8 @@ class Register extends Component {
 */
 function mapStateToProps(state) {
   return {
-    isLoggedIn: state.isLoggedIn
+    isLoggedIn: state.isLoggedIn,
+    currentUserCredentials: state.currentUserCredentials
   }
 }
 
@@ -150,7 +167,7 @@ function mapStateToProps(state) {
 */
 function mapDispatchToProps(dispatch) {
   // When setLogin is called, result is passed to all reducers
-  return bindActionCreators({ setLogin: setLogin }, dispatch);
+  return bindActionCreators({ setLogin: setLogin, setCurrentUserCredentials: setCurrentUserCredentials }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Register);

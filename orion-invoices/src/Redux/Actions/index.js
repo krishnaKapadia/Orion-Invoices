@@ -7,3 +7,11 @@ export function setLogin(value) {
     payload: value
   }
 }
+
+// Sets the logged in user information
+export function setCurrentUserCredentials(user) {
+  return {
+    type: 'CURRENT_USER_SET',
+    payload: user
+  }
+}

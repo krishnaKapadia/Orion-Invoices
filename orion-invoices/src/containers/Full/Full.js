@@ -40,7 +40,7 @@ class Full extends Component {
                 <Breadcrumb />
                 <Container fluid>
                   <Switch>
-                    <Route path="/dashboard" name="Dashboard" component={Dashboard} />
+                    <Route path="/dashboard" name="Dashboard" component={Dashboard}   />
                     <Route path="/profile" name="My Profile" component={Profile} />
                     <Route path="/clients" name="Clients" component={Clients} />
                     <Route path="/employees" name="Employees" component={Employees} />
@@ -77,7 +77,7 @@ class Full extends Component {
 */
 function mapStateToProps(state) {
   return {
-    isLoggedIn: state.isLoggedIn
+    isLoggedIn: state.isLoggedIn, currentUserCredentials: state.currentUserCredentials
   }
 }
 

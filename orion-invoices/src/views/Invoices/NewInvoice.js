@@ -220,7 +220,6 @@ class NewInvoice extends Component {
 
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
-      console.log(response);
       // Redirects react router to display the invoices page, TODO force a re-get of all the invoices as there is a new one that has been added
       success = true;
     }).catch( (err) => {
@@ -229,6 +228,7 @@ class NewInvoice extends Component {
         success = false;
       }
     });
+
     console.log(this.props.history);
     this.props.history.push('/invoices');
   }

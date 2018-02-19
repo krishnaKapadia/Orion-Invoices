@@ -13,6 +13,8 @@ import {
 } from 'reactstrap';
 import axios from 'axios';
 import Spinner from 'react-spinkit';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 class Dashboard extends Component {
 
@@ -26,11 +28,14 @@ class Dashboard extends Component {
       loading: true
     }
 
+    // Sets the axios header to always send user credentials with every request
+    // axios.defaults.headers.common['user_credentials'] = ;
     this.getDataSizes = this.getDataSizes.bind(this);
   }
 
   componentDidMount() {
     this.getDataSizes();
+    // console.log(`WORKING BOIIII: ${this.props.currentUserCredentials}`);
   }
 
   /**
@@ -51,6 +56,7 @@ class Dashboard extends Component {
       orderSize = orders.data.orders.length;
 
       this.setState({ clientSize, invoiceSize, orderSize, loading: false });
+      console.log(this.props.currentUserCredentials);
     })).catch( (err) => {
       console.log(err);
     })
@@ -125,4 +131,15 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+/**
+* Sets props to be accessed by the Login component from redux
+* global state, Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    currentUserCredentials: state.currentUserCredentials
+  }
+}
+
+
+export default connect(mapStateToProps)(Dashboard);

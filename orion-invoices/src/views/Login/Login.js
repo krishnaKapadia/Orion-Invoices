@@ -5,7 +5,7 @@ import {
 from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { setLogin } from '../../Redux/Actions/index';
+import { setLogin, setCurrentUserCredentials } from '../../Redux/Actions/index';
 import { ToastContainer, toast } from 'react-toastify';
 import axios from 'axios';
 import Spinner from 'react-spinkit';
@@ -34,9 +34,12 @@ class Login extends Component {
 
     axios.post("http://localhost:4000/api/v1/users/login", userCredentials).then((response) => {
       if(response.data.result) {
-        this.props.setLogin(true);
 
-        console.log(this.props.isLoggedIn);
+        // TODO PROBLEM WHEN CALLING BOTH ACTIONS, USERCREDENTIALS BECOMES UNDEFINED THEREFORE ACTION IS NEVER CALLED
+        // console.log(`BEFORE ${this.props.currentUserCredentials}`);
+        this.props.setCurrentUserCredentials(response.data.data);
+        this.props.setLogin(true);
+        // console.log(`AFTER ${this.props.currentUserCredentials}`);
 
         // redirect to dashboard
          this.props.history.push("/dashboard");
@@ -138,7 +141,8 @@ class Login extends Component {
 */
 function mapStateToProps(state) {
   return {
-    isLoggedIn: state.isLoggedIn
+    isLoggedIn: state.isLoggedIn,
+    currentUserCredentials: state.currentUserCredentials
   }
 }
 
@@ -148,7 +152,7 @@ function mapStateToProps(state) {
 */
 function mapDispatchToProps(dispatch) {
   // When setLogin is called, result is passed to all reducers
-  return bindActionCreators({ setLogin: setLogin }, dispatch);
+  return bindActionCreators({ setLogin: setLogin, setCurrentUserCredentials: setCurrentUserCredentials  }, dispatch);
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Login);
