@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {
   Container, Row, Col, CardGroup, Card, CardBody, Button, Input,
-  InputGroup, InputGroupAddon, Form}
+  InputGroup, InputGroupAddon, Form, FormFeedback }
 from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -16,7 +16,9 @@ class Login extends Component {
     super(props);
 
     this.state = {
-      loading: false
+      loading: false,
+      invalid_username: false,
+      invaild_password: false
     }
 
     this.handleSubmit      = this.handleSubmit.bind(this);
@@ -35,11 +37,8 @@ class Login extends Component {
     axios.post("http://localhost:4000/api/v1/users/login", userCredentials).then((response) => {
       if(response.data.result) {
 
-        // TODO PROBLEM WHEN CALLING BOTH ACTIONS, USERCREDENTIALS BECOMES UNDEFINED THEREFORE ACTION IS NEVER CALLED
-        // console.log(`BEFORE ${this.props.currentUserCredentials}`);
         this.props.setCurrentUserCredentials(response.data.data);
         this.props.setLogin(true);
-        // console.log(`AFTER ${this.props.currentUserCredentials}`);
 
         // redirect to dashboard
          this.props.history.push("/dashboard");
@@ -50,9 +49,13 @@ class Login extends Component {
       }
     }).catch((err) => {
       this.setState({ loading: false });
-      if(err) toast.error("Could not login, please try again", {
-        position: toast.POSITION.BOTTOM_RIGHT
-      })
+      console.log(err);
+      if(err) {
+        this.setState({ invalid_username: true, invalid_password: true });
+        toast.error("Could not login, please try again. " + err.response.data.message, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        })
+      }
     })
   }
 
@@ -88,14 +91,27 @@ class Login extends Component {
                     <Form onSubmit={this.handleSubmit}>
                       <InputGroup className="mb-3">
                         <InputGroupAddon><i className="icon-user"></i></InputGroupAddon>
-                        <Input type="text" placeholder="Username" name="username" required/>
+                        { !this.state.invalid_username &&
+                          <Input type="text" placeholder="Username" name="username" required/>
+                        }
+                        { this.state.invalid_username &&
+                            <Input valid={false} type="text" placeholder="Username" name="username" required/>
+                        }
                       </InputGroup>
 
                       <InputGroup className="mb-4">
                         <InputGroupAddon><i className="icon-lock"></i></InputGroupAddon>
-                        <Input type="password" placeholder="Password" name="password" required/>
+                        { !this.state.invalid_password &&
+                          <Input type="password" placeholder="Password" name="password" required/>
+                        }
+                        { this.state.invalid_password &&
+                            <Input valid={false} type="password" placeholder="Password" name="password" required/>
+                        }
                       </InputGroup>
-
+                        {
+                          (this.state.invalid_username || this.state.invalid_password) &&
+                            <p className="red"><small>Invalid Username/Password</small></p>
+                        }
                       <Row>
                         <Col xs="6">
                           {

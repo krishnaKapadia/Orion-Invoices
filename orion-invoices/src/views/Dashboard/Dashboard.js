@@ -35,7 +35,6 @@ class Dashboard extends Component {
 
   componentDidMount() {
     this.getDataSizes();
-    // console.log(`WORKING BOIIII: ${this.props.currentUserCredentials}`);
   }
 
   /**
@@ -45,6 +44,9 @@ class Dashboard extends Component {
     var clientSize = 0;
     var invoiceSize = 0;
     var orderSize = 0;
+
+    // Ensure that all req carry header containing the users company_id
+    axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
 
     axios.all([
       axios.get('http://localhost:4000/api/v1/clients'),
@@ -56,7 +58,6 @@ class Dashboard extends Component {
       orderSize = orders.data.orders.length;
 
       this.setState({ clientSize, invoiceSize, orderSize, loading: false });
-      console.log(this.props.currentUserCredentials);
     })).catch( (err) => {
       console.log(err);
     })

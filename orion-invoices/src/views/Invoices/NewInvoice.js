@@ -8,10 +8,12 @@ import { formatToPrice } from '../../Utils/utils';
 import moment from 'moment';
 import axios from 'axios';
 import PrintProvider, { Print, NoPrint } from 'react-easy-print';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setLogin, setCurrentUserCredentials } from '../../Redux/Actions/index';
+import { ToastContainer, toast } from 'react-toastify';
 
 class NewInvoice extends Component {
-
-  // TODO wireup invoice number and viewing already created invoices
 
   // Endpoint to send to API: clientName, number, address and items object, containing objects for each item.
   // eg:
@@ -42,7 +44,6 @@ class NewInvoice extends Component {
     super(props);
 
     this.state = {
-      invoiceNumber: "9369",
       clientName: "",
       clientCode: "",
       clientAddress: "",
@@ -68,6 +69,7 @@ class NewInvoice extends Component {
 
   componentDidMount() {
     this.addItem();
+    this.setState({ inv_number: this.props.currentUserCredentials.inv_number });
   }
 
   // Adds a new empty item to the invoice table
@@ -209,8 +211,10 @@ class NewInvoice extends Component {
       });
     });
 
+    if(this.props.currentUserCredentials.inv_number) data.inv_number = this.props.currentUserCredentials.inv_number;
+
     var newInvoice = {
-      inv_number: data.invoiceNumber, client_code: data.clientCode, client_name: data.clientName,
+      inv_number: data.inv_number, client_code: data.clientCode, client_name: data.clientName,
       client_address: data.clientAddress, subtotal: data.subtotal, tax_rate: data.tax,
       total: data.total, items
     }
@@ -221,31 +225,40 @@ class NewInvoice extends Component {
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
       // Redirects react router to display the invoices page, TODO force a re-get of all the invoices as there is a new one that has been added
-      success = true;
+      // success = true;
+      var user_credentials = this.props.currentUserCredentials;
+      user_credentials.inv_number = user_credentials.inv_number + 1;
+      this.props.setCurrentUserCredentials(user_credentials);
+      this.props.data = newInvoice;
+
+      toast.success("Invoice created!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
     }).catch( (err) => {
       if(err) {
-        console.log(err);
-        success = false;
+        toast.error("Invoice could not be created, please try again. " + err, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        })
+        // success = false;
       }
     });
-
-    console.log(this.props.history);
-    this.props.history.push('/invoices');
+    // console.log(this.props.history);
+    // this.props.history.push('/invoices');
   }
 
   // TODO: After create invocie is submitted, state is not updated with the new invoice, requires route refresh
-  // TODO: Invoice number must increment correctly
   render() {
     /**
     * If the state prop is passed then view only mode is shown,
     * otherwise show empty invoice that is editable
     */
-    if(typeof this.props.location.state !== "undefined") {
-      const data = this.props.location.state.invoice;
+    if(typeof this.props.location.state !== "undefined" || typeof this.props.data !== "undefined") {
+      const data = (typeof this.props.data !== "undefined") ? this.props.data : this.props.location.state.invoice;
       const items = data.items;
 
       return (
         <div>
+          <ToastContainer />
           <Row>
             <Col xs="12" md="12" lg="9">
               <Card className="animated fadeIn invoiceCard">
@@ -415,7 +428,7 @@ class NewInvoice extends Component {
 
                     {/* Print Button */}
                     <Col xs="12" md="12" lg="12">
-                      <Button outline className="fullWidthButton topButton" color="info">Print</Button>
+                      <Button outline className="fullWidthButton topButton" color="info" onClick={() => { window.print(); return false;}}>Print</Button>
                     </Col>
                   </Row>
 
@@ -446,7 +459,7 @@ class NewInvoice extends Component {
 
                       <Col className="rightBox" md="4">
                         <h5 className="bold">Tax Invoice</h5>
-                        <p>Invoice #: {this.state.invoiceNumber} <br />
+                        <p>Invoice #: {this.state.inv_number} <br />
                           Created: {moment().format('LL')} <br />
                           Due: {moment().add(15, 'days').format('LL')}</p>
                       </Col>
@@ -594,7 +607,7 @@ class NewInvoice extends Component {
                 <Row>
                   <Col>
                     {/* <NavLink to="/invoices"> */}
-                      <Button outline type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
+                      <Button type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
                     {/* </NavLink> */}
                   </Col>
 
@@ -615,4 +628,24 @@ class NewInvoice extends Component {
 
 }
 
-export default withRouter(NewInvoice);
+/**
+* Sets props to be accessed by the Login component from redux
+* global state, Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    isLoggedIn: state.isLoggedIn,
+    currentUserCredentials: state.currentUserCredentials
+  }
+}
+
+/**
+* Sets action functions to be used by the Login component through props
+* Functions
+*/
+function mapDispatchToProps(dispatch) {
+  // When setLogin is called, result is passed to all reducers
+  return bindActionCreators({ setLogin: setLogin, setCurrentUserCredentials: setCurrentUserCredentials  }, dispatch);
+}
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewInvoice));

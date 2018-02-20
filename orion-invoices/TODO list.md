@@ -3,8 +3,7 @@ TODO List
 - Overall
   - Data tables must show a max of 10 items per page, therefore need a multipage table
 
-
-  - Will keep track of the inv_number that they are up too. Also allows us to show data to the users of
+  - Also allows us to show data to the users of
     the company that only they should be able to see, i.e no other company can access their data.
 
 - Login:
@@ -17,12 +16,10 @@ TODO List
 - Dashboard
   - Graph not being given data from api to graph with therefore is currently using dummy data
 
-
 - Orders
   - Create an invoice based off an order
 
 - Invoices
-  - Incrementing invoice number
 
 - Clients
 
@@ -50,3 +47,7 @@ COMPLETED
 - adding new client with existing client code error box is not descriptive enough, DONE
 
 - Creating a new company should create a user associated with that company and the company, DONE.
+
+- Will keep track of the inv_number that they are up too. DONE
+
+- Incrementing invoice number, DONE
