@@ -6,8 +6,8 @@ TODO List
   - Also allows us to show data to the users of
     the company that only they should be able to see, i.e no other company can access their data.
 
-- Login:
-  - incorrect login credentials red box and text around input boxes
+- Users
+  - Only show data that is relevent to the user/the company that they belong too
 
 - User Profile
   - Icon
@@ -19,14 +19,14 @@ TODO List
 - Orders
   - Create an invoice based off an order
 
+
 - Invoices
 
 - Clients
 
 - Employees
 
-- Users
-  - Only show data that is relevent to the user/the company that they belong too
+- Login:
 
 COMPLETED
 
@@ -51,3 +51,5 @@ COMPLETED
 - Will keep track of the inv_number that they are up too. DONE
 
 - Incrementing invoice number, DONE
+
+- incorrect login credentials red box and text around input boxes, DONE
