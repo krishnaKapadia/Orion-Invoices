@@ -1,13 +1,17 @@
 import React, { Component } from 'react';
 import {
   Nav, NavItem, NavbarToggler, NavbarBrand, NavLink, Badge, TabContent, TabPane,
-  Label, Input, Progress, Button, Row, Col
+  Label, Input, Progress, Button, Row, Col, Form, InputGroup, InputGroupAddon
 } from 'reactstrap';
 import classnames from 'classnames';
 import Settings from '../Tabs/Settings';
+import axios from 'axios';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setLogin, setCurrentUserCredentials } from '../../Redux/Actions/index';
+import { toast } from 'react-toastify';
 
 // Handles main sidebar menu, also theme selection
-
 class Aside extends Component {
   constructor(props) {
     super(props);
@@ -17,6 +21,8 @@ class Aside extends Component {
       activeTab: '3',
       themeColor: ""
     };
+
+    this.submitInvoiceNumberToApi = this.submitInvoiceNumberToApi.bind(this);
   }
 
   toggle(tab) {
@@ -25,6 +31,36 @@ class Aside extends Component {
         activeTab: tab
       });
     }
+  }
+
+  /**
+  * Handles the invoice number change
+  */
+  submitInvoiceNumberToApi(e) {
+    e.preventDefault();
+    const data = new FormData(e.target);
+
+    const packet = {
+      inv_number: parseFloat(data.get("inv_number"))
+    }
+
+    axios.put(`http://localhost:4000/api/v1/companies/${this.props.currentUserCredentials.company_id}`, packet).then((response) => {
+      var credentials = this.props.currentUserCredentials;
+      credentials.inv_number = packet.inv_number + 1;
+      console.log(this.props.currentUserCredentials);
+      this.props.setCurrentUserCredentials(credentials)
+      console.log(this.props.currentUserCredentials);
+
+      toast.success("Invoice number updated!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
+    }).catch((err) => {
+      if(err) {
+        toast.error("Could not update invoice number, please try again. " + err, {
+          position: toast.POSITION.BOTTOM_RIGHT
+        })
+      }
+    })
   }
 
   render() {
@@ -63,7 +99,7 @@ class Aside extends Component {
             <div className="aside-options">
               <div className="clearfix mt-4">
                 <small><b>Send anonymous data to server</b></small>
-                <Label className="switch switch-text switch-pill switch-success switch-sm float-right">
+                <Label className="switch switch-text switch-pill switch-success switch-sm ">
                   <Input type="checkbox" className="switch-input" defaultChecked/>
                   <span className="switch-label" data-on="On" data-off="Off"></span>
                   <span className="switch-handle"></span>
@@ -75,9 +111,27 @@ class Aside extends Component {
               </div>
             </div>
 
+            <div className="aside-options">
+              <div className="clearfix mt-4">
+                <small><b>Change Current invoice number</b></small>
+                <Label className="switch switch-text switch-pill switch-success switch-sm"></Label>
+              </div>
+              <div>
+                <Form onSubmit={this.submitInvoiceNumberToApi}>
+                  <InputGroup className="smallInputGroup" size="xs">
+                    <Input type="number" name="inv_number" placeholder={this.props.currentUserCredentials.inv_number} className="fullWidthButton" />
+                    <InputGroupAddon className="noBackground" addonType="append">
+                      <Button size="sm" className="smallButton" color="none" type="submit">Submit</Button>
+                    </InputGroupAddon>
+                  </InputGroup>
+                </Form>
+                <small className="text-muted">This will change the current invoice number that a new invoice will have.</small>
+              </div>
+            </div>
+
             <hr/>
 
-            <div className="aside-options">
+            {/* <div className="aside-options">
               <div className="clearfix mt-4">
                 <small><b>Theme Color</b></small>
                 <Label className="switch switch-text switch-pill switch-success switch-sm float-right"></Label>
@@ -101,7 +155,7 @@ class Aside extends Component {
                   </Col>
                 </Row>
               </div>
-            </div>
+            </div> */}
 
             {/* <h6>System Utilization</h6>
 
@@ -135,4 +189,24 @@ class Aside extends Component {
   }
 }
 
-export default Aside;
+/**
+* Sets props to be accessed by the Login component from redux
+* global state, Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    isLoggedIn: state.isLoggedIn,
+    currentUserCredentials: state.currentUserCredentials
+  }
+}
+
+/**
+* Sets action functions to be used by the Login component through props
+* Functions
+*/
+function mapDispatchToProps(dispatch) {
+  // When setLogin is called, result is passed to all reducers
+  return bindActionCreators({ setLogin: setLogin, setCurrentUserCredentials: setCurrentUserCredentials  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Aside);

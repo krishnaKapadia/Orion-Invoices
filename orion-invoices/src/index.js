@@ -4,7 +4,7 @@ import { HashRouter, Route, Switch, Redirect } from 'react-router-dom';
 import createBrowserHistory from 'history/createBrowserHistory';
 // Redux
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './Redux/Reducers/reducers';
 
 // Styles
@@ -24,8 +24,13 @@ import Full from './containers/Full/'
 import Authenticate from './components/Authentication/Authenticate';
 import Login from './views/Login';
 
-const createReduxStore = applyMiddleware()(createStore);
+const createReduxStore = compose(applyMiddleware()(createStore));
 const history = createBrowserHistory();
+
+// Persisting redux state on refresh
+import { persistStore, persistReducer } from 'redux-persist'
+import storage from 'redux-persist/lib/storage' // defaults to localStorage for web and AsyncStorage for react-native
+
 
 ReactDOM.render((
   <Provider store={createReduxStore(rootReducer)}>

@@ -146,9 +146,12 @@ class NewOrder extends Component {
     var props = this.props;
 
     // Post to API via axios
-    // console.log(newOrder);
     axios.post("http://localhost:4000/api/v1/orders", newOrder).then( (response) => {
       this.setState({ loadingButton: false });
+      // TODO toast doesnt trigger as we are redirected before it has a change to show
+      toast.success("Order Created Successfully!", {
+        position: toast.POSITION.BOTTOM_RIGHT
+      });
       props.history.push('/orders');
     }).catch( (err) => {
       if(err) {
@@ -238,14 +241,12 @@ class NewOrder extends Component {
                 </CardBody>
 
                 <CardFooter>
-                    {/* <NavLink to="/orders"> */}
                     {
                       this.state.loadingButton &&  <Button color="primary" className="px-4"><Spinner name="circle" color="white" fadeIn="none" /></Button>
                     }
                     {
                       !this.state.loadingButton &&  <Button type="submit" size="md" color="primary"><i className="fa fa-dot-circle-o"></i> Submit Order</Button>
                     }
-                    {/* </NavLink> */}
 
                     <NavLink to="/orders">
                       <Button className="paddingLeft" type="reset" size="md" color="danger"><i className="fa fa-ban"></i> Cancel Order</Button>

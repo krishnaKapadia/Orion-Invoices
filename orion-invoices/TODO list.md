@@ -1,13 +1,6 @@
 TODO List
 
 - Overall
-  - Data tables must show a max of 10 items per page, therefore need a multipage table
-
-  - Also allows us to show data to the users of
-    the company that only they should be able to see, i.e no other company can access their data.
-
-- Users
-  - Only show data that is relevent to the user/the company that they belong too
 
 - User Profile
   - Icon
@@ -19,12 +12,13 @@ TODO List
 - Orders
   - Create an invoice based off an order
 
-
-- Invoices
+- Users
 
 - Clients
 
 - Employees
+
+- Invoices
 
 - Login:
 
@@ -53,3 +47,14 @@ COMPLETED
 - Incrementing invoice number, DONE
 
 - incorrect login credentials red box and text around input boxes, DONE
+
+- Add company_id to post req, COMPLETED
+
+- Add company_id to post req, DONE
+
+- Add company_id to post req, DONE
+
+- Only show data that is relevent to the user/the company that they belong too, DONE
+
+- Also allows us to show data to the users of
+the company that only they should be able to see, i.e no other company can access their data.

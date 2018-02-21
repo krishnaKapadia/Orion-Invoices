@@ -22,7 +22,6 @@ class Invoices extends Component {
   }
 
   componentDidMount() {
-    // this.forceUpdate();
     this.getAllInvoices();
   }
 
@@ -39,7 +38,6 @@ class Invoices extends Component {
         var date = new Date(invoice.date);
         date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
         invoice.date = date;
-        // TODO: SEND COMPANY_ID WITH REQ HEADER
         // // Finds if the invoice_number is the most recent, i.e the largest so far
         // inv_number = invoice.inv_number > inv_number ? invoice.inv_number : inv_number;
         invoices.push(
@@ -63,7 +61,6 @@ class Invoices extends Component {
   * Sets the search term
   */
   setSearch(e) {
-    console.log(e.target.value);
     this.setState({ search: e.target.value });
   }
 

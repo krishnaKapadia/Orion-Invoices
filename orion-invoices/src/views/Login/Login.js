@@ -52,7 +52,7 @@ class Login extends Component {
       console.log(err);
       if(err) {
         this.setState({ invalid_username: true, invalid_password: true });
-        toast.error("Could not login, please try again. " + err.response.data.message, {
+        toast.error("Could not login, please try again. " + err, {
           position: toast.POSITION.BOTTOM_RIGHT
         })
       }

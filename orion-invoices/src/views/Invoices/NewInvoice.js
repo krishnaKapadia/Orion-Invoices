@@ -202,6 +202,7 @@ class NewInvoice extends Component {
 
   // Submits the invoice to the API
   submitInvoiceToAPI(e) {
+    e.preventDefault();
     var data = this.state;
     var items = [];
 
@@ -211,25 +212,22 @@ class NewInvoice extends Component {
       });
     });
 
-    if(this.props.currentUserCredentials.inv_number) data.inv_number = this.props.currentUserCredentials.inv_number;
+    if(this.props.currentUserCredentials.inv_number) data.inv_number = parseFloat(this.props.currentUserCredentials.inv_number);
 
     var newInvoice = {
-      inv_number: data.inv_number, client_code: data.clientCode, client_name: data.clientName,
+      inv_number: parseFloat(data.inv_number), client_code: data.clientCode, client_name: data.clientName,
       client_address: data.clientAddress, subtotal: data.subtotal, tax_rate: data.tax,
       total: data.total, items
     }
 
     var props = this.props;
-    var success = false;
 
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
-      // Redirects react router to display the invoices page, TODO force a re-get of all the invoices as there is a new one that has been added
-      // success = true;
       var user_credentials = this.props.currentUserCredentials;
-      user_credentials.inv_number = user_credentials.inv_number + 1;
+      user_credentials.inv_number = parseFloat(user_credentials.inv_number) + 1;
       this.props.setCurrentUserCredentials(user_credentials);
-      this.props.data = newInvoice;
+      this.setState({ newInvoice });
 
       toast.success("Invoice created!", {
         position: toast.POSITION.BOTTOM_RIGHT
@@ -252,8 +250,8 @@ class NewInvoice extends Component {
     * If the state prop is passed then view only mode is shown,
     * otherwise show empty invoice that is editable
     */
-    if(typeof this.props.location.state !== "undefined" || typeof this.props.data !== "undefined") {
-      const data = (typeof this.props.data !== "undefined") ? this.props.data : this.props.location.state.invoice;
+    if(typeof this.props.location.state !== "undefined" || typeof this.state.newInvoice !== "undefined") {
+      const data = (typeof this.state.newInvoice !== "undefined") ? this.state.newInvoice : this.props.location.state.invoice;
       const items = data.items;
 
       return (
@@ -266,7 +264,7 @@ class NewInvoice extends Component {
                   <h3>Invoice</h3>
                 </CardHeader>
                 <CardBody>
-                  <Form id="invoiceForm">
+                  <Form>
                     <div className="invoice-container">
                       {/* Invoice */}
                       <Row className="invoiceHeader">
@@ -422,22 +420,22 @@ class NewInvoice extends Component {
                     <Row>
                       <Col xs="12" md="12" lg="12">
                         <NavLink to="/invoices">
-                        <Button outline type="submit" form="invoiceForm" className="fullWidthButton topButton" color="primary">Back</Button>
-                      </NavLink>
-                    </Col>
+                          <Button outline className="fullWidthButton topButton" color="primary">Back</Button>
+                        </NavLink>
+                      </Col>
 
-                    {/* Print Button */}
-                    <Col xs="12" md="12" lg="12">
-                      <Button outline className="fullWidthButton topButton" color="info" onClick={() => { window.print(); return false;}}>Print</Button>
-                    </Col>
-                  </Row>
+                      {/* Print Button */}
+                      <Col xs="12" md="12" lg="12">
+                        <Button outline className="fullWidthButton topButton" color="info" onClick={() => { window.print(); return false;}}>Print</Button>
+                      </Col>
+                    </Row>
 
-                </CardBody>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      );
+                  </CardBody>
+                </Card>
+              </Col>
+            </Row>
+          </div>
+        );
 
     } else {
       return (
@@ -606,9 +604,7 @@ class NewInvoice extends Component {
               <CardBody>
                 <Row>
                   <Col>
-                    {/* <NavLink to="/invoices"> */}
-                      <Button type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
-                    {/* </NavLink> */}
+                    <Button type="submit" form="invoiceForm" className="fullWidthButton" color="primary">Save Invoice</Button>
                   </Col>
 
                   <Col>

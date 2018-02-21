@@ -10,6 +10,7 @@ export function setLogin(value) {
 
 // Sets the logged in user information
 export function setCurrentUserCredentials(user) {
+  console.log(user);
   return {
     type: 'CURRENT_USER_SET',
     payload: user
