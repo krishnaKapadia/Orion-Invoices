@@ -19,6 +19,7 @@ import Invoices from '../../views/Invoices/Invoices';
 import NewInvoice from '../../views/Invoices/NewInvoice';
 import Login from '../../views/Login';
 import Register from '../../views/Register/Register';
+import axios from 'axios';
 
 class Full extends Component {
 
@@ -26,14 +27,20 @@ class Full extends Component {
     super(props);
   }
 
+  componentWillMount() {
+    if(this.props.isLoggedIn) {
+      // Ensure that all req carry header containing the users company_id
+      // console.log(this.props.currentUserCredentials);
+      axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
+    }
+  }
 
   render() {
-
     if(this.props.isLoggedIn) {
       return (
         <Switch>
           <div className="app">
-            <Header history={this.props.history}/>
+            <Header history={this.props.history} />
             <div className="app-body">
               <Sidebar {...this.props}/>
               <main className="main">

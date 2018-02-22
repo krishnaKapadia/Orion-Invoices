@@ -45,9 +45,8 @@ class Dashboard extends Component {
     var invoiceSize = 0;
     var orderSize = 0;
 
-    // Ensure that all req carry header containing the users company_id
-    axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
-
+  axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
+  
     axios.all([
       axios.get('http://localhost:4000/api/v1/clients'),
       axios.get('http://localhost:4000/api/v1/invoices'),

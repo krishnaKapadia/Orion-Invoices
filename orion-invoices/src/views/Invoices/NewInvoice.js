@@ -12,6 +12,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setLogin, setCurrentUserCredentials } from '../../Redux/Actions/index';
 import { ToastContainer, toast } from 'react-toastify';
+import PropTypes from 'prop-types';
+import {persistStore} from 'redux-persist';
 
 class NewInvoice extends Component {
 
@@ -69,6 +71,7 @@ class NewInvoice extends Component {
 
   componentDidMount() {
     this.addItem();
+
     this.setState({ inv_number: this.props.currentUserCredentials.inv_number });
   }
 
@@ -213,7 +216,7 @@ class NewInvoice extends Component {
     });
 
     if(this.props.currentUserCredentials.inv_number) data.inv_number = parseFloat(this.props.currentUserCredentials.inv_number);
-
+    // console.log(this.props.currentUserCredentials);
     var newInvoice = {
       inv_number: parseFloat(data.inv_number), client_code: data.clientCode, client_name: data.clientName,
       client_address: data.clientAddress, subtotal: data.subtotal, tax_rate: data.tax,
@@ -224,9 +227,10 @@ class NewInvoice extends Component {
 
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
-      var user_credentials = this.props.currentUserCredentials;
-      user_credentials.inv_number = parseFloat(user_credentials.inv_number) + 1;
-      this.props.setCurrentUserCredentials(user_credentials);
+      // var user_credentials = this.props.currentUserCredentials;
+      // user_credentials.inv_number = parseFloat(user_credentials.inv_number) + 1;
+      // this.props.setCurrentUserCredentials(user_credentials);
+
       this.setState({ newInvoice });
 
       toast.success("Invoice created!", {
@@ -234,6 +238,7 @@ class NewInvoice extends Component {
       });
     }).catch( (err) => {
       if(err) {
+        console.log(err);
         toast.error("Invoice could not be created, please try again. " + err, {
           position: toast.POSITION.BOTTOM_RIGHT
         })
@@ -440,6 +445,7 @@ class NewInvoice extends Component {
     } else {
       return (
         <Row>
+          <ToastContainer />
           <Col xs="12" md="12" lg="9">
             <Card className="animated fadeIn invoiceCard">
               <CardHeader>
@@ -631,7 +637,8 @@ class NewInvoice extends Component {
 function mapStateToProps(state) {
   return {
     isLoggedIn: state.isLoggedIn,
-    currentUserCredentials: state.currentUserCredentials
+    currentUserCredentials: state.currentUserCredentials,
+    _persist: state.persist
   }
 }
 
@@ -643,5 +650,9 @@ function mapDispatchToProps(dispatch) {
   // When setLogin is called, result is passed to all reducers
   return bindActionCreators({ setLogin: setLogin, setCurrentUserCredentials: setCurrentUserCredentials  }, dispatch);
 }
+
+NewInvoice.contextTypes = {
+  store: PropTypes.object
+};
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(NewInvoice));

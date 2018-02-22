@@ -6,7 +6,6 @@ import { ToastContainer , toast} from 'react-toastify';
 import Spinner from 'react-spinkit';
 
 class Order extends Component {
-  // TODO complete adding loading spinner to this page
   constructor(props) {
     super(props)
 

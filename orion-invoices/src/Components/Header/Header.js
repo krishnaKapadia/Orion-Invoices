@@ -11,6 +11,8 @@ import {
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { setLogin } from '../../Redux/Actions/index';
+import PropTypes from 'prop-types';
+import {persistStore} from 'redux-persist';
 
 class Header extends Component {
 
@@ -42,13 +44,18 @@ class Header extends Component {
 
   /**
   * Sets the redux isLoggedIn state variable to reflect logout,
-  * and show the login page
+  * Instead redux state is completly reset.
   */
   logout() {
     // set redux state variable
+    // this.context.persistor.pause();
+    persistStore(this.context.store).purge().then((i) => {
+
+    })
     this.props.setLogin(false);
+    this.props.dispatch( { type: 'RESET' });
     // Redirect
-    this.props.history.push("/login");
+    // this.props.history.push("/login");
   }
 
   render() {
@@ -108,5 +115,9 @@ function mapDispatchToProps(dispatch) {
   // When setLogin is called, result is passed to all reducers
   return bindActionCreators({ setLogin: setLogin }, dispatch);
 }
+
+Header.contextTypes = {
+  store: PropTypes.object
+};
 
 export default connect()(Header);

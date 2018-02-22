@@ -7,7 +7,11 @@ import {
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
-import Spinner from 'react-spinkit'
+import Spinner from 'react-spinkit';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { setCurrentUserCredentials } from '../../Redux/Actions/index';
+
 class Invoices extends Component {
 
   constructor(props) {
@@ -32,14 +36,12 @@ class Invoices extends Component {
     axios.get("http://localhost:4000/api/v1/invoices").then( (data) => {
       var invoices = [];
       var invoiceCount = 0;
-      // var inv_number = 0;
+      var inv_number = data.data.invoices[0].inv_number;
 
       data.data.invoices.map( (invoice) => {
         var date = new Date(invoice.date);
         date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
         invoice.date = date;
-        // // Finds if the invoice_number is the most recent, i.e the largest so far
-        // inv_number = invoice.inv_number > inv_number ? invoice.inv_number : inv_number;
         invoices.push(
           invoice
           // id: invoice._id, inv_number: invoice.inv_number,
@@ -49,6 +51,10 @@ class Invoices extends Component {
         );
         invoiceCount++;
       });
+      // Set new inv_number in global redux state
+      var user_credentials = this.props.currentUserCredentials;
+      user_credentials.inv_number = parseFloat(inv_number) + 1;
+      this.props.setCurrentUserCredentials(user_credentials);
 
       this.setState({ invoices, invoiceCount, loading: false });
     }).catch( (err) => {
@@ -176,4 +182,23 @@ class Invoices extends Component {
 
 }
 
-export default Invoices;
+/**
+* Sets props to be accessed by the Login component from redux
+* global state, Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    currentUserCredentials: state.currentUserCredentials,
+  }
+}
+
+/**
+* Sets action functions to be used by the Login component through props
+* Functions
+*/
+function mapDispatchToProps(dispatch) {
+  // When setLogin is called, result is passed to all reducers
+  return bindActionCreators({ setCurrentUserCredentials: setCurrentUserCredentials  }, dispatch);
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Invoices);
