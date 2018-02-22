@@ -7,6 +7,8 @@ import {
   Dropdown
 } from 'reactstrap';
 import { NavLink } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 class HeaderDropdown extends Component {
 
@@ -27,10 +29,11 @@ class HeaderDropdown extends Component {
 
   dropAccnt() {
     return (
-      <Dropdown nav isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+      <Dropdown className="usernameContainer" nav isOpen={this.state.dropdownOpen} toggle={this.toggle}>
         {/* <DropdownToggle> */}
-        <NavLink to="/profile" >
-              <img src={'img/avatars/2.jpg'} style={ { width: '70%' } } className="img-avatar" alt="Profile Picture"/>
+        <NavLink to="/profile" className="username" >
+            {/* <img src={'img/avatars/2.jpg'} style={ { width: '70%' } } className="img-avatar" alt="Profile Picture"/> */}
+            {this.props.currentUserCredentials.username.toUpperCase()}
           {/* </DropdownToggle> */}
         </NavLink>
       </Dropdown>
@@ -45,4 +48,16 @@ class HeaderDropdown extends Component {
   }
 }
 
-export default HeaderDropdown;
+/**
+* Sets props to be accessed by the Login component from redux
+* global state, Variables & Objects
+*/
+function mapStateToProps(state) {
+  return {
+    isLoggedIn: state.isLoggedIn,
+    currentUserCredentials: state.currentUserCredentials,
+    _persist: state.persist
+  }
+}
+
+export default connect(mapStateToProps)(HeaderDropdown);

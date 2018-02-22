@@ -227,10 +227,6 @@ class NewInvoice extends Component {
 
     // Post to API via axios
     axios.post("http://localhost:4000/api/v1/invoices", newInvoice).then( (response) => {
-      // var user_credentials = this.props.currentUserCredentials;
-      // user_credentials.inv_number = parseFloat(user_credentials.inv_number) + 1;
-      // this.props.setCurrentUserCredentials(user_credentials);
-
       this.setState({ newInvoice });
 
       toast.success("Invoice created!", {
