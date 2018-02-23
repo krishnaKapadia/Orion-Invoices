@@ -25,7 +25,8 @@ class Dashboard extends Component {
       clientSize: 0,
       invoiceSize: 0,
       orderSize: 0,
-      loading: true
+      loading: true,
+      orders: ''
     }
 
     // Sets the axios header to always send user credentials with every request
@@ -45,8 +46,8 @@ class Dashboard extends Component {
     var invoiceSize = 0;
     var orderSize = 0;
 
-  axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
-  
+    axios.defaults.headers.common['company_id'] = this.props.currentUserCredentials.company_id;
+
     axios.all([
       axios.get('http://localhost:4000/api/v1/clients'),
       axios.get('http://localhost:4000/api/v1/invoices'),
@@ -56,7 +57,7 @@ class Dashboard extends Component {
       invoiceSize = invoices.data.invoices.length;
       orderSize = orders.data.orders.length;
 
-      this.setState({ clientSize, invoiceSize, orderSize, loading: false });
+      this.setState({ clientSize, invoiceSize, orderSize, loading: false, orders: orders.data.orders });
     })).catch( (err) => {
       console.log(err);
     })
@@ -117,7 +118,7 @@ class Dashboard extends Component {
           <Row>
             <Col xs="12" md="8" lg="8">
               {/* Graph of the number of jobs/orders completed per day, for 30 days */}
-              <LineGraph />
+              <LineGraph data={this.state.orders} />
             </Col>
 
             <Col xs="12" md="4" lg="4">
